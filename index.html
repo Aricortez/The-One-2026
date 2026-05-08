@@ -1,351 +1,265 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <title>The One — Sistema Integral</title>
-    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The One System</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#e60000">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/685/685655.png">
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
-    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
     <style>
-        :root {
-            --primario: #e60000;
-            --oscuro: #0a0a0a;
-            --gris-suave: #f4f4f4;
-            --blanco: #ffffff;
-            --sombra: 0 8px 30px rgba(0,0,0,0.1);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: all 0.2s ease; }
-        body { background: var(--gris-suave); height: 100vh; color: #333; overflow: hidden; display: flex; flex-direction: column; }
-
-        /* --- LOGIN --- */
+        :root { --primario: #e60000; --oscuro: #0a0a0a; --blanco: #ffffff; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: #f4f4f4; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        
+        /* LOGIN */
         #login-page { position: fixed; inset: 0; background: var(--oscuro); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .login-card { background: var(--blanco); padding: 30px; border-radius: 20px; width: 100%; max-width: 380px; text-align: center; }
+        .login-card { background: var(--blanco); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; }
         .input-group { text-align: left; margin-bottom: 15px; }
-        .input-group label { font-size: 11px; color: #888; font-weight: 700; text-transform: uppercase; }
-        .input-group input { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #ddd; background: #f9f9f9; font-size: 16px; margin-top: 5px; outline: none; }
-        .login-btn { width: 100%; padding: 16px; margin: 8px 0; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; }
-
-        /* --- ESTRUCTURA PRINCIPAL --- */
+        .input-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccc; margin-top: 5px; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 10px; }
+        
+        /* APP */
         #main-app { display: none; height: 100vh; width: 100%; flex-direction: row; }
-        .sidebar { width: 260px; background: var(--oscuro); color: var(--blanco); display: flex; flex-direction: column; padding: 20px; border-right: 2px solid var(--primario); z-index: 100; }
-        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-        .topbar { background: var(--blanco); padding: 0 20px; display: flex; border-bottom: 1px solid #eee; justify-content: space-between; align-items: center; min-height: 70px; }
-
-        /* RESPONSIVO PARA MÓVIL */
+        .sidebar { width: 250px; background: var(--oscuro); color: white; display: flex; flex-direction: column; padding: 20px; }
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .topbar { background: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; }
+        
         @media (max-width: 768px) {
             #main-app { flex-direction: column-reverse; }
-            .sidebar { width: 100%; height: 75px; flex-direction: row; padding: 5px; border-right: none; border-top: 2px solid var(--primario); }
-            .sidebar h2, .sidebar hr { display: none; }
-            .nav-item { flex: 1; flex-direction: column; font-size: 10px; gap: 4px; }
-            .nav-item i { font-size: 20px; }
-            .content-section { padding: 15px 15px 100px 15px; }
+            .sidebar { width: 100%; height: 70px; flex-direction: row; padding: 0; border-top: 2px solid var(--primario); }
+            .nav-item { flex: 1; flex-direction: column; font-size: 10px; justify-content: center; }
+            .sidebar h2 { display: none; }
+            .content-section { padding-bottom: 80px; }
         }
 
-        .nav-item { padding: 12px; display: flex; align-items: center; gap: 12px; border-radius: 10px; color: #777; cursor: pointer; }
-        .nav-item.active { background: rgba(230, 0, 0, 0.1); color: var(--blanco); }
-
-        /* --- TABLAS Y CARDS --- */
-        .content-section { display: none; overflow-y: auto; flex: 1; padding: 25px; }
-        .content-section.active { display: block; animation: fadeIn 0.3s ease; }
-        .card { background: var(--blanco); border-radius: 15px; box-shadow: var(--sombra); margin-bottom: 20px; padding: 20px; border-top: 3px solid var(--primario); }
-        .table-container { width: 100%; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 500px; }
-        th { padding: 12px; text-align: left; font-size: 10px; color: #888; border-bottom: 1px solid #eee; }
-        td { padding: 15px; font-size: 14px; border-bottom: 1px solid #f9f9f9; }
-
-        .btn-accion { background: var(--oscuro); color: var(--blanco); border: none; padding: 12px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; }
-        .panel-derecho { position: fixed; right: 0; top: 0; bottom: 0; width: 100%; max-width: 400px; background: var(--blanco); transform: translateX(100%); padding: 30px; z-index: 200; border-left: 4px solid var(--primario); overflow-y: auto; box-shadow: -10px 0 30px rgba(0,0,0,0.1); }
-        .panel-derecho.open { transform: translateX(0); }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 15px; }
-        .modal-overlay.active { display: flex; }
+        .nav-item { padding: 15px; display: flex; align-items: center; gap: 10px; color: #888; cursor: pointer; text-align: center; }
+        .nav-item.active { color: white; background: rgba(230,0,0,0.2); }
+        .content-section { display: none; flex: 1; overflow-y: auto; padding: 20px; }
+        .content-section.active { display: block; }
+        .card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .hidden { display: none !important; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+        .panel { position: fixed; right: 0; top: 0; bottom: 0; width: 100%; max-width: 350px; background: white; transform: translateX(100%); transition: 0.3s; z-index: 500; padding: 20px; box-shadow: -5px 0 15px rgba(0,0,0,0.1); }
+        .panel.open { transform: translateX(0); }
     </style>
 </head>
 <body>
 
     <div id="login-page">
         <div class="login-card">
-            <h2 style="margin-bottom:20px;">THE ONE</h2>
-            <div id="login-form-seguro" class="hidden">
-                <h3 id="titulo-login" style="font-size:12px; color:var(--primario); margin-bottom:10px;">ACCESO</h3>
-                <div class="input-group"><label>Usuario</label><input type="text" id="user-input"></div>
-                <div class="input-group"><label>Contraseña</label><input type="password" id="pass-input"></div>
-                <button class="login-btn" style="background:var(--oscuro); color:white;" onclick="procesarLogin()">ENTRAR</button>
-                <p onclick="mostrarOpciones()" style="font-size:11px; color:#888; cursor:pointer; margin-top:10px;">Volver</p>
+            <h2 style="margin-bottom:20px">THE ONE</h2>
+            <div id="login-menu">
+                <button class="btn" onclick="login('empleado')">EMPLEADO</button>
+                <button class="btn" onclick="showAuth('gerente')">GERENTE</button>
+                <button class="btn" style="background:var(--oscuro); color:white" onclick="showAuth('jefe')">DIRECTOR</button>
             </div>
-            <div id="login-opciones">
-                <button class="login-btn" onclick="login('empleado')">EMPLEADO</button>
-                <button class="login-btn" onclick="mostrarForm('gerente')">GERENTE</button>
-                <button class="login-btn" style="background:var(--oscuro); color:white;" onclick="mostrarForm('jefe')">DIRECTOR</button>
+            <div id="login-auth" class="hidden">
+                <h4 id="auth-title"></h4>
+                <div class="input-group"><input type="text" id="user" placeholder="Usuario"></div>
+                <div class="input-group"><input type="password" id="pass" placeholder="Contraseña"></div>
+                <button class="btn" style="background:var(--primario); color:white" onclick="checkAuth()">ENTRAR</button>
+                <p onclick="location.reload()" style="cursor:pointer; font-size:12px; color:gray">Volver</p>
             </div>
         </div>
     </div>
 
     <div id="main-app">
         <div class="sidebar">
-            <h2 style="font-size:18px; text-align:center; margin-bottom:20px;">THE ONE</h2>
-            <nav style="flex:1; display:flex; flex-direction: inherit;">
-                <div id="nav-clientes" class="nav-item active" onclick="verSeccion('clientes', this)"><i class="ti ti-users"></i> <span>Clientes</span></div>
-                <div id="nav-materiales" class="nav-item solo-jefe hidden" onclick="verSeccion('materiales', this)"><i class="ti ti-package"></i> <span>Materiales</span></div>
-                <div id="nav-finanzas" class="nav-item" onclick="verSeccion('finanzas', this)"><i class="ti ti-report-money"></i> <span>Balance</span></div>
-                <div class="nav-item" onclick="location.reload()" style="color:#ff4d4d; margin-top:auto;"><i class="ti ti-logout"></i> <span>Salir</span></div>
-            </nav>
+            <h2 style="margin-bottom:30px">THE ONE</h2>
+            <div class="nav-item active" onclick="tab('clientes', this)"><i class="ti ti-users"></i> Clientes</div>
+            <div id="tab-materiales" class="nav-item solo-jefe hidden" onclick="tab('materiales', this)"><i class="ti ti-box"></i> Materiales</div>
+            <div class="nav-item" onclick="tab('balance', this)"><i class="ti ti-coin"></i> Balance</div>
+            <div class="nav-item" onclick="location.reload()" style="color:var(--primario); margin-top:auto"><i class="ti ti-logout"></i> Salir</div>
         </div>
-
         <div class="main">
             <div class="topbar">
-                <div id="rol-tag" style="font-size:9px; font-weight:800; border:1px solid #ddd; padding:5px 15px; border-radius:20px;">-</div>
-                <button id="btn-agregar-cli" class="btn-accion hidden" onclick="abrirModal('modal-nuevo', true)">+ CLIENTE</button>
+                <b id="user-display">ROL</b>
+                <button id="add-cli-btn" class="btn hidden" style="width:auto; margin:0; background:var(--oscuro); color:white" onclick="openMod('mod-cli', true)">+ CLIENTE</button>
             </div>
 
             <div id="sec-clientes" class="content-section active">
-                <h1 style="margin-bottom:20px;">Cartera de Clientes</h1>
                 <div class="card">
-                    <div class="table-container">
-                        <table>
-                            <thead><tr><th>NOMBRE</th><th>SERVICIO</th><th>PAGOS</th><th class="solo-jefe hidden">ELIMINAR</th></tr></thead>
-                            <tbody id="lista-clientes-body"></tbody>
-                        </table>
-                    </div>
+                    <table>
+                        <thead><tr><th>Nombre</th><th>Servicio</th><th>Pagos</th></tr></thead>
+                        <tbody id="lista-cli"></tbody>
+                    </table>
                 </div>
             </div>
 
             <div id="sec-materiales" class="content-section">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h1>Gastos y Materiales</h1>
-                    <button class="btn-accion" onclick="abrirModal('modal-material', true)">+ REGISTRAR GASTO</button>
+                <div style="display:flex; justify-content:space-between; align-items:center">
+                    <h2>Gastos</h2>
+                    <button class="btn" style="width:auto; background:var(--primario); color:white" onclick="openMod('mod-mat', true)">+ Gasto</button>
                 </div>
                 <div class="card">
-                    <div class="table-container">
-                        <table>
-                            <thead><tr><th>FECHA</th><th>ARTÍCULO</th><th>CATEGORÍA</th><th>COSTO</th></tr></thead>
-                            <tbody id="lista-materiales-body"></tbody>
-                        </table>
-                    </div>
+                    <table>
+                        <thead><tr><th>Fecha</th><th>Item</th><th>Costo</th></tr></thead>
+                        <tbody id="lista-mat"></tbody>
+                    </table>
                 </div>
             </div>
 
-            <div id="sec-finanzas" class="content-section">
-                <h1>Balance Financiero</h1>
-                <div id="dash-jefe" class="hidden">
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:15px;">
-                        <div class="card" style="text-align:center;"><p style="font-size:10px; color:#888;">INGRESOS</p><h2 id="f-ingresos" style="color:green">$0</h2></div>
-                        <div class="card" style="text-align:center;"><p style="font-size:10px; color:#888;">GASTOS</p><h2 id="f-gastos" style="color:red">$0</h2></div>
+            <div id="sec-balance" class="content-section">
+                <div id="stats-jefe" class="hidden">
+                    <div class="card" style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+                        <div><small>INGRESOS</small><h2 id="tot-in" style="color:green">$0</h2></div>
+                        <div><small>EGRESOS</small><h2 id="tot-out" style="color:red">$0</h2></div>
                     </div>
-                    <div class="card" style="text-align:center;"><p style="font-size:10px; color:#888;">UTILIDAD</p><h1 id="f-neto" style="color:var(--primario)">$0</h1></div>
                 </div>
-                <div class="card"><h4 style="margin-bottom:15px;">Rendimiento por Servicio</h4><div id="barras-servicios"></div></div>
+                <div class="card"><h3>Rendimiento</h3><div id="grafico"></div></div>
             </div>
         </div>
     </div>
 
-    <div id="modal-nuevo" class="modal-overlay">
-        <div class="card" style="width:100%; max-width:400px;">
-            <h3>Nuevo Registro</h3><br>
-            <div class="input-group"><label>Nombre</label><input type="text" id="in-nombre"></div>
-            <div class="input-group"><label>Servicio</label>
-                <select id="in-serv" style="width:100%; padding:14px; border-radius:10px; border:1px solid #ddd;">
-                    <option>Graduación</option><option>Bodas</option><option>Maternidad</option><option>XV Años</option><option>Personales</option>
-                </select>
-            </div>
-            <div class="input-group"><label>Pago Inicial ($)</label><input type="number" id="in-pago"></div>
-            <div style="display:flex; gap:10px; margin-top:10px;">
-                <button class="btn-accion" style="background:#eee; color:#333; flex:1;" onclick="abrirModal('modal-nuevo', false)">Cancelar</button>
-                <button class="btn-accion" style="flex:1;" onclick="crearCliente()">Guardar</button>
-            </div>
-        </div>
+    <div id="mod-cli" class="panel">
+        <h3>Nuevo Cliente</h3><br>
+        <input type="text" id="n-cli" placeholder="Nombre" style="width:100%; padding:10px; margin-bottom:10px">
+        <select id="s-cli" style="width:100%; padding:10px; margin-bottom:10px">
+            <option>Graduación</option><option>Bodas</option><option>XV Años</option><option>Retrato</option>
+        </select>
+        <input type="number" id="p-cli" placeholder="Pago inicial $" style="width:100%; padding:10px; margin-bottom:10px">
+        <button class="btn" style="background:var(--oscuro); color:white" onclick="addCli()">Guardar</button>
+        <button class="btn" onclick="openMod('mod-cli', false)">Cerrar</button>
     </div>
 
-    <div id="modal-material" class="modal-overlay">
-        <div class="card" style="width:100%; max-width:400px;">
-            <h3>Registrar Gasto</h3><br>
-            <div class="input-group"><label>Artículo</label><input type="text" id="mat-nombre"></div>
-            <div class="input-group"><label>Categoría</label>
-                <select id="mat-cat" style="width:100%; padding:14px; border-radius:10px; border:1px solid #ddd;">
-                    <option>Equipo</option><option>Consumibles</option><option>Mantenimiento</option>
-                </select>
-            </div>
-            <div class="input-group"><label>Costo ($)</label><input type="number" id="mat-costo"></div>
-            <div style="display:flex; gap:10px; margin-top:10px;">
-                <button class="btn-accion" style="background:#eee; color:#333; flex:1;" onclick="abrirModal('modal-material', false)">Cancelar</button>
-                <button class="btn-accion" style="flex:1;" onclick="registrarMaterial()">Guardar</button>
-            </div>
-        </div>
+    <div id="mod-mat" class="panel">
+        <h3>Nuevo Gasto</h3><br>
+        <input type="text" id="n-mat" placeholder="Artículo" style="width:100%; padding:10px; margin-bottom:10px">
+        <input type="number" id="c-mat" placeholder="Costo $" style="width:100%; padding:10px; margin-bottom:10px">
+        <button class="btn" style="background:var(--oscuro); color:white" onclick="addMat()">Guardar</button>
+        <button class="btn" onclick="openMod('mod-mat', false)">Cerrar</button>
     </div>
 
-    <div id="panel-cobro" class="panel-derecho">
-        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 id="det-nombre">Nombre</h2>
-            <button style="border:none; background:#eee; width:35px; height:35px; border-radius:50%; cursor:pointer;" onclick="cerrarPanel()">×</button>
-        </div>
-        <p id="det-serv" style="color: var(--primario); font-weight: 700; margin-bottom: 30px;">Servicio</p>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h4>HISTORIAL DE PAGOS</h4>
-            <button class="btn-accion" style="padding:8px 15px;" onclick="registrarPago()">+ COBRAR</button>
-        </div>
-        <div id="lista-pagos-det"></div>
+    <div id="panel-pagos" class="panel">
+        <h2 id="pago-nom"></h2>
+        <p id="pago-serv" style="color:var(--primario)"></p><br>
+        <button class="btn" style="background:green; color:white" onclick="nuevoPago()">+ REGISTRAR COBRO</button>
+        <hr><br>
+        <div id="historial-pagos"></div>
+        <button class="btn" style="margin-top:20px" onclick="document.getElementById('panel-pagos').classList.remove('open')">Cerrar</button>
     </div>
 
     <script>
-        // REGISTRO DE SERVICE WORKER PARA INSTALACIÓN
+        // Registro de PWA (Instalación)
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then(reg => console.log('Instalación lista')).catch(err => console.log('Error SW', err));
-            });
+            navigator.serviceWorker.register('./sw.js').then(() => console.log("PWA lista"));
         }
 
-        let clientes = JSON.parse(localStorage.getItem('theOne_final_v1')) || [];
-        let materiales = JSON.parse(localStorage.getItem('theOne_mats_final_v1')) || [];
-        let rol = '';
-        let intentType = '';
-        let cliActivo = null;
+        let db_c = JSON.parse(localStorage.getItem('theone_c')) || [];
+        let db_m = JSON.parse(localStorage.getItem('theone_m')) || [];
+        let cur_rol = '';
+        let cur_type = '';
+        let cur_cli = null;
 
-        function salvar() {
-            localStorage.setItem('theOne_final_v1', JSON.stringify(clientes));
-            localStorage.setItem('theOne_mats_final_v1', JSON.stringify(materiales));
+        function showAuth(t) {
+            cur_type = t;
+            document.getElementById('auth-title').innerText = "Acceso " + t.toUpperCase();
+            document.getElementById('login-menu').classList.add('hidden');
+            document.getElementById('login-auth').classList.remove('hidden');
         }
 
-        function mostrarForm(tipo) {
-            intentType = tipo;
-            document.getElementById('titulo-login').innerText = "MODO " + tipo.toUpperCase();
-            document.getElementById('login-opciones').classList.add('hidden');
-            document.getElementById('login-form-seguro').classList.remove('hidden');
+        function checkAuth() {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            if(cur_type === 'jefe' && u === 'admin' && p === '1234') login('jefe');
+            else if(cur_type === 'gerente' && u === 'gerente01' && p === 'theone2026') login('gerente');
+            else alert("Error");
         }
 
-        function mostrarOpciones() {
-            document.getElementById('login-opciones').classList.remove('hidden');
-            document.getElementById('login-form-seguro').classList.add('hidden');
-        }
-
-        function procesarLogin() {
-            const u = document.getElementById('user-input').value;
-            const p = document.getElementById('pass-input').value;
-            if(intentType === 'jefe' && u === 'admin' && p === '1234') login('jefe');
-            else if(intentType === 'gerente' && u === 'gerente01' && p === 'theone2026') login('gerente');
-            else alert("Credenciales incorrectas");
-        }
-
-        function login(tipo) {
-            rol = tipo;
+        function login(r) {
+            cur_rol = r;
             document.getElementById('login-page').style.display = 'none';
             document.getElementById('main-app').style.display = 'flex';
-            document.getElementById('rol-tag').innerText = tipo.toUpperCase();
-            
-            if(tipo === 'jefe' || tipo === 'gerente') document.getElementById('btn-agregar-cli').classList.remove('hidden');
-            
-            if(tipo === 'jefe') {
-                document.querySelectorAll('.solo-jefe').forEach(el => el.classList.remove('hidden'));
-                document.getElementById('dash-jefe').classList.remove('hidden');
+            document.getElementById('user-display').innerText = r.toUpperCase();
+            if(r === 'jefe' || r === 'gerente') document.getElementById('add-cli-btn').classList.remove('hidden');
+            if(r === 'jefe') {
+                document.getElementById('tab-materiales').classList.remove('hidden');
+                document.getElementById('stats-jefe').classList.remove('hidden');
             }
-            actualizarTodo();
+            render();
         }
 
-        function verSeccion(id, el) {
+        function tab(id, el) {
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('sec-' + id).classList.add('active');
             el.classList.add('active');
-            cerrarPanel();
         }
 
-        function actualizarTodo() {
-            const cBody = document.getElementById('lista-clientes-body');
-            cBody.innerHTML = '';
-            clientes.forEach(c => {
-                const tr = document.createElement('tr');
-                tr.onclick = (e) => { if(e.target.tagName !== 'I') mostrarDetalles(c.id); };
-                tr.innerHTML = `<td><strong>${c.nombre}</strong></td><td>${c.servicio}</td><td>${c.pagos.length}</td>
-                <td class="${rol !== 'jefe' ? 'hidden' : ''}"><i class="ti ti-trash" style="color:red; cursor:pointer;" onclick="borrarCliente(${c.id})"></i></td>`;
-                cBody.appendChild(tr);
+        function addCli() {
+            const n = document.getElementById('n-cli').value;
+            const p = parseFloat(document.getElementById('p-cli').value) || 0;
+            if(!n) return;
+            db_c.push({ id: Date.now(), nom: n, serv: document.getElementById('s-cli').value, pagos: [{m:p, f: new Date().toLocaleDateString()}] });
+            save(); openMod('mod-cli', false); render();
+        }
+
+        function addMat() {
+            const n = document.getElementById('n-mat').value;
+            const c = parseFloat(document.getElementById('c-mat').value) || 0;
+            if(!n) return;
+            db_m.push({ n, c, f: new Date().toLocaleDateString() });
+            save(); openMod('mod-mat', false); render();
+        }
+
+        function render() {
+            const l_c = document.getElementById('lista-cli');
+            l_c.innerHTML = '';
+            let total_in = 0;
+            db_c.forEach(c => {
+                let suma = 0; c.pagos.forEach(p => { suma += p.m; total_in += p.m; });
+                l_c.innerHTML += `<tr onclick="detalles(${c.id})"><td>${c.nom}</td><td>${c.serv}</td><td>$${suma}</td></tr>`;
             });
 
-            const mBody = document.getElementById('lista-materiales-body');
-            mBody.innerHTML = '';
-            let totalG = 0;
-            materiales.forEach(m => {
-                totalG += m.costo;
-                mBody.innerHTML += `<tr><td>${m.fecha}</td><td>${m.nombre}</td><td>${m.cat}</td><td>$${m.costo}</td></tr>`;
+            const l_m = document.getElementById('lista-mat');
+            l_m.innerHTML = '';
+            let total_out = 0;
+            db_m.forEach(m => {
+                total_out += m.c;
+                l_m.innerHTML += `<tr><td>${m.f}</td><td>${m.n}</td><td>$${m.c}</td></tr>`;
             });
 
-            let totalI = 0;
-            clientes.forEach(c => c.pagos.forEach(p => totalI += p.monto));
-
-            if(rol === 'jefe') {
-                document.getElementById('f-ingresos').innerText = `$${totalI}`;
-                document.getElementById('f-gastos').innerText = `$${totalG}`;
-                document.getElementById('f-neto').innerText = `$${totalI - totalG}`;
-            }
-            renderBarras(totalI);
+            document.getElementById('tot-in').innerText = '$' + total_in;
+            document.getElementById('tot-out').innerText = '$' + total_out;
+            renderGraf(total_in);
         }
 
-        function crearCliente() {
-            const nom = document.getElementById('in-nombre').value;
-            const pago = parseFloat(document.getElementById('in-pago')) || 0;
-            if(!nom) return alert("Falta el nombre");
-            clientes.push({ id: Date.now(), nombre: nom, servicio: document.getElementById('in-serv').value, pagos: [{monto: pago, fecha: new Date().toLocaleDateString(), por: rol}] });
-            salvar();
-            abrirModal('modal-nuevo', false);
-            actualizarTodo();
+        function detalles(id) {
+            cur_cli = db_c.find(x => x.id === id);
+            document.getElementById('pago-nom').innerText = cur_cli.nom;
+            document.getElementById('pago-serv').innerText = cur_cli.serv;
+            const h = document.getElementById('historial-pagos');
+            h.innerHTML = cur_cli.pagos.map(p => `<div style="padding:10px; border-bottom:1px solid #eee"><b>$${p.m}</b> <small>${p.f}</small></div>`).join('');
+            document.getElementById('panel-pagos').classList.add('open');
         }
 
-        function registrarMaterial() {
-            const nom = document.getElementById('mat-nombre').value;
-            const cos = parseFloat(document.getElementById('mat-costo').value);
-            if(!nom || isNaN(cos)) return alert("Datos inválidos");
-            materiales.push({ nombre: nom, cat: document.getElementById('mat-cat').value, costo: cos, fecha: new Date().toLocaleDateString() });
-            salvar();
-            abrirModal('modal-material', false);
-            actualizarTodo();
-        }
-
-        function mostrarDetalles(id) {
-            cliActivo = clientes.find(c => c.id === id);
-            document.getElementById('det-nombre').innerText = cliActivo.nombre;
-            document.getElementById('det-serv').innerText = cliActivo.servicio;
-            renderPagos();
-            document.getElementById('panel-cobro').classList.add('open');
-        }
-
-        function registrarPago() {
-            const m = prompt("Monto del cobro:");
-            if(m && !isNaN(m)) {
-                cliActivo.pagos.push({ monto: parseFloat(m), fecha: new Date().toLocaleDateString(), por: rol });
-                salvar(); renderPagos(); actualizarTodo();
+        function nuevoPago() {
+            const m = parseFloat(prompt("Monto del cobro:"));
+            if(m) {
+                cur_cli.pagos.push({m, f: new Date().toLocaleDateString()});
+                save(); detalles(cur_cli.id); render();
             }
         }
 
-        function renderPagos() {
-            document.getElementById('lista-pagos-det').innerHTML = cliActivo.pagos.map(p => `
-                <div style="background:#f9f9f9; padding:12px; border:1px solid #eee; margin-bottom:8px; border-radius:10px;">
-                    <div style="display:flex; justify-content:space-between;"><strong>$${p.monto}</strong> <span>${p.fecha}</span></div>
-                    <div style="font-size:10px; color:#888;">Registró: ${p.por}</div>
-                </div>
-            `).join('');
-        }
-
-        function borrarCliente(id) { if(confirm("¿Borrar cliente?")) { clientes = clientes.filter(c => c.id !== id); salvar(); actualizarTodo(); } }
-
-        function renderBarras(total) {
-            const bCont = document.getElementById('barras-servicios');
-            if(!bCont) return;
-            bCont.innerHTML = '';
-            ["Graduación", "Bodas", "Maternidad", "XV Años", "Personales"].forEach(t => {
+        function renderGraf(total) {
+            const g = document.getElementById('grafico');
+            g.innerHTML = '';
+            ["Graduación", "Bodas", "XV Años", "Retrato"].forEach(s => {
                 let suma = 0;
-                clientes.filter(c => c.servicio === t).forEach(c => c.pagos.forEach(p => suma += p.monto));
-                let p = total > 0 ? (suma / total) * 100 : 0;
-                bCont.innerHTML += `<div style="margin-bottom:10px; font-size:11px;">${t} ($${suma})<div style="height:5px; background:#eee; border-radius:10px; margin-top:3px;"><div style="width:${p}%; height:100%; background:var(--primario); border-radius:10px;"></div></div></div>`;
+                db_c.filter(x => x.serv === s).forEach(x => x.pagos.forEach(p => suma += p.m));
+                let por = total > 0 ? (suma / total) * 100 : 0;
+                g.innerHTML += `<div style="margin-bottom:10px">${s} ($${suma})<div style="height:8px; background:#eee; border-radius:5px"><div style="width:${por}%; height:100%; background:var(--primario); border-radius:5px"></div></div></div>`;
             });
         }
 
-        function abrirModal(id, s) { document.getElementById(id).classList.toggle('active', s); }
-        function cerrarPanel() { document.getElementById('panel-cobro').classList.remove('open'); }
+        function save() {
+            localStorage.setItem('theone_c', JSON.stringify(db_c));
+            localStorage.setItem('theone_m', JSON.stringify(db_m));
+        }
+
+        function openMod(id, s) { document.getElementById(id).classList.toggle('open', s); }
     </script>
 </body>
 </html>
