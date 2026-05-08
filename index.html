@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-    <title>The One Fotografía</title>
+    <title>The One — Sistema</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#e60000">
@@ -59,7 +59,7 @@
         td { padding: 15px; font-size: 14px; border-bottom: 1px solid #f9f9f9; }
 
         .btn-accion { background: var(--oscuro); color: var(--blanco); border: none; padding: 12px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 13px; }
-        .panel-derecho { position: fixed; right: 0; top: 0; bottom: 0; width: 100%; max-width: 400px; background: var(--blanco); box-shadow: -10px 0 30px rgba(0,0,0,0.1); transform: translateX(100%); padding: 30px; z-index: 200; border-left: 4px solid var(--primario); overflow-y: auto; }
+        .panel-derecho { position: fixed; right: 0; top: 0; bottom: 0; width: 100%; max-width: 400px; background: var(--blanco); transform: translateX(100%); padding: 30px; z-index: 200; border-left: 4px solid var(--primario); overflow-y: auto; }
         .panel-derecho.open { transform: translateX(0); }
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 15px; }
         .modal-overlay.active { display: flex; }
@@ -111,14 +111,7 @@
 
             <div id="sec-clientes" class="content-section active">
                 <h1 style="margin: 10px 0 20px 0; font-size: 22px;">Cartera</h1>
-                <div class="card">
-                    <div class="table-container">
-                        <table>
-                            <thead><tr><th>CLIENTE</th><th>SERVICIO</th><th>PAGOS</th><th class="solo-jefe hidden">×</th></tr></thead>
-                            <tbody id="lista-clientes-body"></tbody>
-                        </table>
-                    </div>
-                </div>
+                <div class="card"><div class="table-container"><table><thead><tr><th>CLIENTE</th><th>SERVICIO</th><th>PAGOS</th><th class="solo-jefe hidden">×</th></tr></thead><tbody id="lista-clientes-body"></tbody></table></div></div>
             </div>
 
             <div id="sec-materiales" class="content-section">
@@ -126,14 +119,7 @@
                     <h1 style="font-size: 22px;">Gastos</h1>
                     <button class="btn-accion" onclick="abrirModal('modal-material', true)">+ REGISTRAR</button>
                 </div>
-                <div class="card">
-                    <div class="table-container">
-                        <table>
-                            <thead><tr><th>FECHA</th><th>ARTÍCULO</th><th>CATEGORÍA</th><th>COSTO</th></tr></thead>
-                            <tbody id="lista-materiales-body"></tbody>
-                        </table>
-                    </div>
-                </div>
+                <div class="card"><div class="table-container"><table><thead><tr><th>FECHA</th><th>ARTÍCULO</th><th>CATEGORÍA</th><th>COSTO</th></tr></thead><tbody id="lista-materiales-body"></tbody></table></div></div>
             </div>
 
             <div id="sec-finanzas" class="content-section">
@@ -145,10 +131,7 @@
                     </div>
                     <div class="card" style="text-align:center; border-top-color: #000;"><p style="font-size:9px; color:#888;">UTILIDAD NETA</p><h2 id="f-neto" style="color:var(--primario)">$0</h2></div>
                 </div>
-                <div class="card">
-                    <h4 style="margin-bottom:15px; font-size:11px; color:#888;">RENDIMIENTO POR SERVICIO</h4>
-                    <div id="barras-servicios"></div>
-                </div>
+                <div class="card"><h4 style="margin-bottom:15px; font-size:11px;">RENDIMIENTO</h4><div id="barras-servicios"></div></div>
             </div>
         </div>
     </div>
@@ -157,18 +140,9 @@
         <div class="card" style="width:100%; max-width:400px;">
             <h2>Nuevo Registro</h2><br>
             <div class="input-group"><label>Nombre</label><input type="text" id="in-nombre"></div>
-            <div class="input-group">
-                <label>Servicio</label>
-                <select id="in-serv">
-                    <option>Graduación</option><option>Bodas</option><option>Maternidad</option>
-                    <option>Retratos</option><option>XV Años</option><option>Personales</option><option>Infantiles</option>
-                </select>
-            </div>
+            <div class="input-group"><label>Servicio</label><select id="in-serv"><option>Graduación</option><option>Bodas</option><option>Maternidad</option><option>Retratos</option><option>XV Años</option><option>Personales</option><option>Infantiles</option></select></div>
             <div class="input-group"><label>Pago Inicial ($)</label><input type="number" id="in-pago-inicial"></div>
-            <div style="display:flex; gap:10px; margin-top:10px;">
-                <button class="btn-accion" style="background:#eee; color:#333; flex:1;" onclick="abrirModal('modal-nuevo', false)">Cerrar</button>
-                <button class="btn-accion" style="flex:1;" onclick="crearCliente()">Guardar</button>
-            </div>
+            <div style="display:flex; gap:10px; margin-top:10px;"><button class="btn-accion" style="background:#eee; color:#333; flex:1;" onclick="abrirModal('modal-nuevo', false)">Cerrar</button><button class="btn-accion" style="flex:1;" onclick="crearCliente()">Guardar</button></div>
         </div>
     </div>
 
@@ -188,26 +162,27 @@
             <button style="border:none; background:#eee; width:35px; height:35px; border-radius:50%; cursor:pointer;" onclick="cerrarPanel()">×</button>
         </div>
         <p id="det-serv" style="color: var(--primario); font-weight: 700; margin-bottom: 30px;">-</p>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <h4>PAGOS</h4>
-            <button class="btn-accion" style="padding:8px 15px;" onclick="registrarPago()">+ COBRAR</button>
-        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;"><h4>PAGOS</h4><button class="btn-accion" style="padding:8px 15px;" onclick="registrarPago()">+ COBRAR</button></div>
         <div id="lista-pagos-det"></div>
     </div>
 
     <script>
-        // Registro de PWA
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); }
+        // REGISTRO DE SERVICE WORKER PARA INSTALACIÓN
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').then(reg => console.log('SW ok')).catch(err => console.log('SW error', err));
+            });
+        }
 
-        let clientes = JSON.parse(localStorage.getItem('theOne_gh_v1')) || [];
-        let materiales = JSON.parse(localStorage.getItem('theOne_mats_gh_v1')) || [];
+        let clientes = JSON.parse(localStorage.getItem('theOne_gh_v2')) || [];
+        let materiales = JSON.parse(localStorage.getItem('theOne_mats_gh_v2')) || [];
         let rol = '';
         let intentType = '';
         let cliActivo = null;
 
         function salvar() {
-            localStorage.setItem('theOne_gh_v1', JSON.stringify(clientes));
-            localStorage.setItem('theOne_mats_gh_v1', JSON.stringify(materiales));
+            localStorage.setItem('theOne_gh_v2', JSON.stringify(clientes));
+            localStorage.setItem('theOne_mats_gh_v2', JSON.stringify(materiales));
         }
 
         function mostrarForm(tipo) {
@@ -235,7 +210,11 @@
             document.getElementById('login-page').style.display = 'none';
             document.getElementById('main-app').style.display = 'flex';
             document.getElementById('rol-tag').innerText = tipo.toUpperCase();
+            
+            // Permisos de Director/Gerente
             if(tipo === 'jefe' || tipo === 'gerente') document.getElementById('btn-agregar-cli').classList.remove('hidden');
+            
+            // Permisos Exclusivos Director
             if(tipo === 'jefe') {
                 document.querySelectorAll('.solo-jefe').forEach(el => el.classList.remove('hidden'));
                 document.getElementById('dash-jefe').classList.remove('hidden');
