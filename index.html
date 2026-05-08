@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>The One Fotografía — Control de Acceso</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
+    <style>
+        :root {
+            --primario: #e60000;
+            --oscuro: #0a0a0a;
+            --gris-suave: #f4f4f4;
+            --blanco: #ffffff;
+            --sombra: 0 8px 30px rgba(0,0,0,0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: all 0.25s ease; }
+        body { background: var(--gris-suave); height: 100vh; color: #333; overflow: hidden; }
+
+        /* --- LOGIN --- */
+        #login-page { position: fixed; inset: 0; background: var(--oscuro); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .login-card { background: var(--blanco); padding: 40px; border-radius: 20px; width: 380px; text-align: center; box-shadow: 0 0 50px rgba(230,0,0,0.2); }
+        .input-group { text-align: left; margin-bottom: 15px; }
+        .input-group label { font-size: 11px; color: #888; font-weight: 700; }
+        .input-group input, .input-group select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; background: #f9f9f9; outline: none; margin-top: 5px; }
+        .login-btn { width: 100%; padding: 14px; margin: 8px 0; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; }
+
+        /* --- LAYOUT --- */
+        #main-app { display: none; height: 100vh; width: 100%; }
+        .sidebar { width: 260px; background: var(--oscuro); color: var(--blanco); display: flex; flex-direction: column; padding: 20px; border-right: 2px solid var(--primario); }
+        .nav-item { padding: 15px; display: flex; align-items: center; gap: 12px; border-radius: 10px; margin-bottom: 5px; color: #777; cursor: pointer; }
+        .nav-item:hover, .nav-item.active { background: rgba(230, 0, 0, 0.1); color: var(--blanco); }
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .topbar { background: var(--blanco); padding: 15px 40px; display: flex; border-bottom: 1px solid #eee; justify-content: space-between; align-items: center; height: 70px; }
+
+        /* --- TABLAS Y CARDS --- */
+        .content-section { display: none; padding: 30px; overflow-y: auto; }
+        .content-section.active { display: block; animation: slideUp 0.4s ease; }
+        .card { background: var(--blanco); border-radius: 15px; box-shadow: var(--sombra); overflow: hidden; margin-bottom: 25px; padding: 20px; border-top: 3px solid var(--primario); }
+        table { width: 100%; border-collapse: collapse; }
+        th { padding: 15px; text-align: left; font-size: 11px; color: #888; text-transform: uppercase; border-bottom: 1px solid #eee; }
+        td { padding: 15px; font-size: 14px; border-bottom: 1px solid #f9f9f9; }
+
+        .btn-accion { background: var(--oscuro); color: var(--blanco); border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .btn-accion:hover { background: var(--primario); }
+
+        .panel-derecho { position: fixed; right: 0; top: 0; bottom: 0; width: 400px; background: var(--blanco); box-shadow: -10px 0 30px rgba(0,0,0,0.1); transform: translateX(100%); padding: 40px; z-index: 50; border-left: 4px solid var(--primario); }
+        .panel-derecho.open { transform: translateX(0); }
+
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+
+        .hidden { display: none !important; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div id="login-page">
+        <div class="login-card">
+            <div style="font-size: 50px; color: var(--primario);"><i class="ti ti-camera"></i></div>
+            <h2 style="margin-bottom:20px;">THE ONE</h2>
+            
+            <div id="login-form-seguro" class="hidden">
+                <h3 id="titulo-login" style="font-size:12px; color:var(--primario); margin-bottom:15px;">ACCESO PRIVADO</h3>
+                <div class="input-group"><label>USUARIO</label><input type="text" id="user-input"></div>
+                <div class="input-group"><label>CONTRASEÑA</label><input type="password" id="pass-input"></div>
+                <button class="login-btn" style="background:var(--oscuro); color:white;" onclick="procesarLogin()">ENTRAR</button>
+                <p onclick="mostrarOpciones()" style="font-size:12px; color:#888; cursor:pointer; margin-top:10px;">Volver</p>
+            </div>
+
+            <div id="login-opciones">
+                <button class="login-btn" style="background:#eee" onclick="login('empleado')">EMPLEADO</button>
+                <button class="login-btn" style="background:#eee" onclick="mostrarForm('gerente')">GERENTE</button>
+                <button class="login-btn" style="background:var(--oscuro); color:white;" onclick="mostrarForm('jefe')">DIRECTOR</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-app">
+        <div class="sidebar">
+            <div style="text-align:center; padding:20px; border-bottom:1px solid #222; margin-bottom:20px;">
+                <h2 style="letter-spacing:2px;">THE <span style="color:var(--primario)">ONE</span></h2>
+            </div>
+            <nav style="flex:1">
+                <div id="nav-clientes" class="nav-item active" onclick="verSeccion('clientes', this)"><i class="ti ti-users"></i> Clientes</div>
+                <div id="nav-materiales" class="nav-item solo-jefe hidden" onclick="verSeccion('materiales', this)"><i class="ti ti-package"></i> Materiales</div>
+                <div id="nav-finanzas" class="nav-item" onclick="verSeccion('finanzas', this)"><i class="ti ti-report-money"></i> Finanzas</div>
+            </nav>
+            <div class="nav-item" onclick="location.reload()" style="color:#ff4d4d"><i class="ti ti-logout"></i> Salir</div>
+        </div>
+
+        <div class="main">
+            <div class="topbar">
+                <div id="rol-tag" style="font-size:10px; font-weight:800; border:1px solid #ddd; padding:5px 15px; border-radius:20px;">ROLE</div>
+                <button id="btn-agregar-cli" class="btn-accion hidden" onclick="abrirModal('modal-nuevo', true)">+ AGREGAR CLIENTE</button>
+            </div>
+
+            <div id="sec-clientes" class="content-section active">
+                <h1>Cartera de Clientes</h1>
+                <div class="card">
+                    <table>
+                        <thead><tr><th>Cliente</th><th>Servicio</th><th>Pagos Reg.</th><th class="solo-jefe hidden">Acción</th></tr></thead>
+                        <tbody id="lista-clientes-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="sec-materiales" class="content-section">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                    <h1>Gastos de Operación</h1>
+                    <button class="btn-accion" onclick="abrirModal('modal-material', true)">+ REGISTRAR COMPRA</button>
+                </div>
+                <div class="card">
+                    <table>
+                        <thead><tr><th>Fecha</th><th>Material</th><th>Categoría</th><th>Costo</th></tr></thead>
+                        <tbody id="lista-materiales-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="sec-finanzas" class="content-section">
+                <h1>Panel Financiero</h1>
+                <div id="dash-jefe" class="hidden" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:20px; margin:20px 0;">
+                    <div class="card" style="text-align:center;"><p style="font-size:10px; color:#888;">INGRESOS</p><h2 id="f-ingresos" style="color:green">$0</h2></div>
+                    <div class="card" style="text-align:center;"><p style="font-size:10px; color:#888;">GASTOS</p><h2 id="f-gastos" style="color:red">$0</h2></div>
+                    <div class="card" style="text-align:center;"><p style="font-size:10px; color:#888;">UTILIDAD</p><h2 id="f-neto" style="color:var(--primario)">$0</h2></div>
+                </div>
+                <div class="card"><h4 style="margin-bottom:15px; font-size:12px;">RENDIMIENTO</h4><div id="barras-servicios"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-nuevo" class="modal-overlay">
+        <div class="card" style="width:400px;">
+            <h2>Nuevo Registro</h2><br>
+            <div class="input-group"><label>NOMBRE</label><input type="text" id="in-nombre"></div>
+            <div class="input-group">
+                <label>SERVICIO</label>
+                <select id="in-serv">
+                    <option>Graduación</option><option>Bodas</option><option>Maternidad</option>
+                    <option>Retratos</option><option>XV Años</option><option>Personales</option><option>Infantiles</option>
+                </select>
+            </div>
+            <div class="input-group"><label>PAGO INICIAL ($)</label><input type="number" id="in-pago-inicial" placeholder="0.00"></div>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn-accion" style="background:#ccc; color:#333; flex:1;" onclick="abrirModal('modal-nuevo', false)">Cerrar</button>
+                <button class="btn-accion" style="flex:1;" onclick="crearCliente()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-material" class="modal-overlay">
+        <div class="card" style="width:400px;">
+            <h2>Registrar Gasto</h2><br>
+            <div class="input-group"><label>ARTÍCULO</label><input type="text" id="mat-nombre"></div>
+            <div class="input-group"><label>CATEGORÍA</label><select id="mat-cat"><option>Equipo</option><option>Consumibles</option><option>Mantenimiento</option></select></div>
+            <div class="input-group"><label>COSTO ($)</label><input type="number" id="mat-costo"></div>
+            <div style="display:flex; gap:10px; margin-top:20px;"><button class="btn-accion" style="background:#ccc; color:#333; flex:1;" onclick="abrirModal('modal-material', false)">Cerrar</button><button class="btn-accion" style="flex:1;" onclick="registrarMaterial()">Guardar</button></div>
+        </div>
+    </div>
+
+    <div id="panel-cobro" class="panel-derecho">
+        <button style="float:right; border:none; background:none; font-size:30px; cursor:pointer;" onclick="cerrarPanel()">×</button>
+        <h2 id="det-nombre" style="margin-top: 30px;">-</h2>
+        <p id="det-serv" style="color: var(--primario); font-size: 14px; margin-bottom: 40px;">-</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h4 style="font-size:10px; color:#aaa;">PAGOS</h4>
+            <button class="btn-accion" style="padding:6px 12px; font-size:11px;" onclick="registrarPago()">+ COBRAR</button>
+        </div>
+        <div id="lista-pagos-det"></div>
+    </div>
+
+    <script>
+        let clientes = JSON.parse(localStorage.getItem('theOne_v2_clientes')) || [];
+        let materiales = JSON.parse(localStorage.getItem('theOne_v2_materiales')) || [];
+        let rol = '';
+        let intentType = ''; // Para saber si intenta entrar como gerente o jefe
+
+        function salvar() {
+            localStorage.setItem('theOne_v2_clientes', JSON.stringify(clientes));
+            localStorage.setItem('theOne_v2_materiales', JSON.stringify(materiales));
+        }
+
+        // CONTROL DE LOGIN
+        function mostrarForm(tipo) {
+            intentType = tipo;
+            document.getElementById('titulo-login').innerText = "ACCESO " + tipo.toUpperCase();
+            document.getElementById('login-opciones').classList.add('hidden');
+            document.getElementById('login-form-seguro').classList.remove('hidden');
+        }
+
+        function mostrarOpciones() {
+            document.getElementById('login-opciones').classList.remove('hidden');
+            document.getElementById('login-form-seguro').classList.add('hidden');
+        }
+
+        function procesarLogin() {
+            const u = document.getElementById('user-input').value;
+            const p = document.getElementById('pass-input').value;
+
+            if(intentType === 'jefe') {
+                if(u === 'admin' && p === '1234') login('jefe');
+                else alert("Datos de Director incorrectos");
+            } else if(intentType === 'gerente') {
+                if(u === 'gerente01' && p === 'theone2026') login('gerente');
+                else alert("Datos de Gerente incorrectos");
+            }
+        }
+
+        function login(tipo) {
+            rol = tipo;
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('main-app').style.display = 'flex';
+            document.getElementById('rol-tag').innerText = tipo.toUpperCase();
+            
+            // Permisos
+            if(tipo === 'jefe' || tipo === 'gerente') {
+                document.getElementById('btn-agregar-cli').classList.remove('hidden');
+            }
+            if(tipo === 'jefe') {
+                document.querySelectorAll('.solo-jefe').forEach(el => el.classList.remove('hidden'));
+                document.getElementById('dash-jefe').classList.remove('hidden');
+            }
+            actualizarTodo();
+        }
+
+        function verSeccion(id, el) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('sec-' + id).classList.add('active');
+            el.classList.add('active');
+            
+            const btn = document.getElementById('btn-agregar-cli');
+            if(id === 'clientes' && (rol === 'jefe' || rol === 'gerente')) btn.classList.remove('hidden');
+            else btn.classList.add('hidden');
+            cerrarPanel();
+        }
+
+        function actualizarTodo() {
+            const cBody = document.getElementById('lista-clientes-body');
+            cBody.innerHTML = '';
+            clientes.forEach(c => {
+                const tr = document.createElement('tr');
+                tr.onclick = (e) => { if(e.target.tagName !== 'I') mostrarDetalles(c.id); };
+                tr.innerHTML = `<td><strong>${c.nombre}</strong></td><td>${c.servicio}</td><td>${c.pagos.length}</td>
+                <td class="${rol !== 'jefe' ? 'hidden' : ''}"><i class="ti ti-trash" style="color:red; cursor:pointer;" onclick="borrarCliente(${c.id})"></i></td>`;
+                cBody.appendChild(tr);
+            });
+
+            const mBody = document.getElementById('lista-materiales-body');
+            mBody.innerHTML = '';
+            let totalGastos = 0;
+            materiales.forEach(m => {
+                totalGastos += m.costo;
+                mBody.innerHTML += `<tr><td>${m.fecha}</td><td>${m.nombre}</td><td>${m.cat}</td><td>$${m.costo}</td></tr>`;
+            });
+
+            let totalIngresos = 0;
+            clientes.forEach(c => c.pagos.forEach(p => totalIngresos += p.monto));
+
+            if(rol === 'jefe') {
+                document.getElementById('f-ingresos').innerText = `$${totalIngresos}`;
+                document.getElementById('f-gastos').innerText = `$${totalGastos}`;
+                document.getElementById('f-neto').innerText = `$${totalIngresos - totalGastos}`;
+            }
+            renderBarras(totalIngresos);
+        }
+
+        function crearCliente() {
+            const nom = document.getElementById('in-nombre').value;
+            const ser = document.getElementById('in-serv').value;
+            const pago = parseFloat(document.getElementById('in-pago-inicial').value) || 0;
+            if(!nom) return alert("Escribe el nombre");
+            clientes.push({ 
+                id: Date.now(), nombre: nom, servicio: ser, 
+                pagos: [{ monto: pago, fecha: new Date().toLocaleDateString(), por: rol }] 
+            });
+            salvar();
+            document.getElementById('in-nombre').value = '';
+            document.getElementById('in-pago-inicial').value = '';
+            abrirModal('modal-nuevo', false);
+            actualizarTodo();
+        }
+
+        function registrarMaterial() {
+            const nom = document.getElementById('mat-nombre').value;
+            const cos = parseFloat(document.getElementById('mat-costo').value);
+            if(!nom || isNaN(cos)) return alert("Error en datos");
+            materiales.push({ nombre: nom, cat: document.getElementById('mat-cat').value, costo: cos, fecha: new Date().toLocaleDateString() });
+            salvar();
+            document.getElementById('mat-nombre').value = '';
+            document.getElementById('mat-costo').value = '';
+            abrirModal('modal-material', false);
+            actualizarTodo();
+        }
+
+        function mostrarDetalles(id) {
+            cliActivo = clientes.find(c => c.id === id);
+            document.getElementById('det-nombre').innerText = cliActivo.nombre;
+            document.getElementById('det-serv').innerText = cliActivo.servicio;
+            renderPagos();
+            document.getElementById('panel-cobro').classList.add('open');
+        }
+
+        function registrarPago() {
+            const m = prompt("Monto cobrado:");
+            if(m && !isNaN(m)) {
+                cliActivo.pagos.push({ monto: parseFloat(m), fecha: new Date().toLocaleDateString(), por: rol });
+                salvar();
+                renderPagos();
+                actualizarTodo();
+            }
+        }
+
+        function renderPagos() {
+            document.getElementById('lista-pagos-det').innerHTML = cliActivo.pagos.map(p => `
+                <div style="background:#fdfdfd; padding:10px; border:1px solid #eee; margin-bottom:10px; border-radius:10px;">
+                    <strong>$${p.monto}</strong><br><small>${p.fecha} - Registrado por: ${p.por}</small>
+                </div>
+            `).join('');
+        }
+
+        function borrarCliente(id) {
+            if(confirm("¿Eliminar cliente permanentemente?")) {
+                clientes = clientes.filter(c => c.id !== id);
+                salvar();
+                actualizarTodo();
+            }
+        }
+
+        function renderBarras(total) {
+            const bCont = document.getElementById('barras-servicios');
+            if(!bCont) return;
+            bCont.innerHTML = '';
+            const tipos = ["Graduación", "Bodas", "Maternidad", "Retratos", "XV Años", "Personales", "Infantiles"];
+            tipos.forEach(t => {
+                let suma = 0;
+                clientes.filter(c => c.servicio === t).forEach(c => c.pagos.forEach(p => suma += p.monto));
+                let p = total > 0 ? (suma / total) * 100 : 0;
+                bCont.innerHTML += `<div style="margin-bottom:10px; font-size:12px;">${t} ($${suma})<div style="height:5px; background:#eee; border-radius:5px;"><div style="width:${p}%; height:100%; background:var(--primario);"></div></div></div>`;
+            });
+        }
+
+        function abrirModal(id, s) { document.getElementById(id).classList.toggle('active', s); }
+        function cerrarPanel() { document.getElementById('panel-cobro').classList.remove('open'); }
+    </script>
+</body>
+</html>
