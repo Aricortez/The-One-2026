@@ -1,0 +1,15 @@
+{
+  "name": "The One Fotografía",
+  "short_name": "The One",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#e60000",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/685/685655.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
