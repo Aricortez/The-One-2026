@@ -12,55 +12,79 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"/>
     
     <style>
-        /* (El mismo estilo que ya tienes configurado para móvil y escritorio) */
-        :root { --primario: #e60000; --oscuro: #0a0a0a; --gris-suave: #f4f4f4; --blanco: #ffffff; --sombra: 0 8px 30px rgba(0,0,0,0.1); }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        :root {
+            --primario: #e60000;
+            --oscuro: #0a0a0a;
+            --gris-suave: #f4f4f4;
+            --blanco: #ffffff;
+            --sombra: 0 8px 30px rgba(0,0,0,0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; transition: all 0.2s ease; }
         body { background: var(--gris-suave); height: 100vh; color: #333; overflow: hidden; display: flex; flex-direction: column; }
+
+        /* --- LOGIN --- */
         #login-page { position: fixed; inset: 0; background: var(--oscuro); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .login-card { background: var(--blanco); padding: 30px; border-radius: 20px; width: 100%; max-width: 380px; text-align: center; }
+        .login-card { background: var(--blanco); padding: 30px; border-radius: 20px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 0 50px rgba(230,0,0,0.2); }
         .input-group { text-align: left; margin-bottom: 15px; }
-        .input-group label { font-size: 11px; color: #888; font-weight: 700; }
+        .input-group label { font-size: 11px; color: #888; font-weight: 700; text-transform: uppercase; }
         .input-group input, .input-group select { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #ddd; background: #f9f9f9; font-size: 16px; margin-top: 5px; outline: none; }
-        .login-btn { width: 100%; padding: 16px; margin: 8px 0; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; }
+        .login-btn { width: 100%; padding: 16px; margin: 8px 0; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 14px; }
+
+        /* --- NAVEGACIÓN --- */
         #main-app { display: none; height: 100vh; width: 100%; flex-direction: row; }
         .sidebar { width: 260px; background: var(--oscuro); color: var(--blanco); display: flex; flex-direction: column; padding: 20px; border-right: 2px solid var(--primario); z-index: 100; }
         .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
         .topbar { background: var(--blanco); padding: 0 20px; display: flex; border-bottom: 1px solid #eee; justify-content: space-between; align-items: center; min-height: 70px; }
+
         @media (max-width: 768px) {
             #main-app { flex-direction: column-reverse; }
             .sidebar { width: 100%; height: 70px; flex-direction: row; padding: 5px; border-right: none; border-top: 2px solid var(--primario); }
             .sidebar h2 { display: none; }
-            .nav-item { flex: 1; flex-direction: column; font-size: 10px; gap: 4px; padding: 5px; }
+            .nav-item { flex: 1; flex-direction: column; justify-content: center; font-size: 10px; gap: 4px; padding: 5px; }
+            .nav-item i { font-size: 20px; }
             .content-section { padding: 15px; padding-bottom: 90px; }
         }
+
         .nav-item { padding: 12px; display: flex; align-items: center; gap: 12px; border-radius: 10px; color: #777; cursor: pointer; text-align: center; }
-        .nav-item.active { background: rgba(230, 0, 0, 0.1); color: var(--blanco); }
+        .nav-item:hover, .nav-item.active { background: rgba(230, 0, 0, 0.1); color: var(--blanco); }
+
+        /* --- CONTENIDO --- */
         .content-section { display: none; overflow-y: auto; flex: 1; }
-        .content-section.active { display: block; }
+        .content-section.active { display: block; animation: fadeIn 0.3s ease; }
         .card { background: var(--blanco); border-radius: 15px; box-shadow: var(--sombra); margin-bottom: 20px; padding: 20px; border-top: 3px solid var(--primario); }
-        .btn-accion { background: var(--oscuro); color: var(--blanco); border: none; padding: 12px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; }
-        .panel-derecho { position: fixed; right: 0; top: 0; bottom: 0; width: 100%; max-width: 400px; background: var(--blanco); transform: translateX(100%); padding: 30px; z-index: 200; border-left: 4px solid var(--primario); transition: 0.3s; }
+        .table-container { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        th { padding: 12px; text-align: left; font-size: 10px; color: #888; border-bottom: 1px solid #eee; }
+        td { padding: 15px; font-size: 14px; border-bottom: 1px solid #f9f9f9; }
+
+        .btn-accion { background: var(--oscuro); color: var(--blanco); border: none; padding: 12px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 13px; }
+        .panel-derecho { position: fixed; right: 0; top: 0; bottom: 0; width: 100%; max-width: 400px; background: var(--blanco); box-shadow: -10px 0 30px rgba(0,0,0,0.1); transform: translateX(100%); padding: 30px; z-index: 200; border-left: 4px solid var(--primario); overflow-y: auto; }
         .panel-derecho.open { transform: translateX(0); }
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 15px; }
         .modal-overlay.active { display: flex; }
         .hidden { display: none !important; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <div id="login-page">
         <div class="login-card">
-            <h2 style="margin-bottom:20px;">THE ONE</h2>
+            <div style="font-size: 40px; color: var(--primario);"><i class="ti ti-camera"></i></div>
+            <h2 style="margin-bottom:20px; letter-spacing:2px;">THE ONE</h2>
+            
             <div id="login-form-seguro" class="hidden">
-                <h3 id="titulo-login" style="font-size:12px; color:var(--primario);">ACCESO</h3>
+                <h3 id="titulo-login" style="font-size:12px; color:var(--primario); margin-bottom:15px;">-</h3>
                 <div class="input-group"><label>Usuario</label><input type="text" id="user-input"></div>
                 <div class="input-group"><label>Contraseña</label><input type="password" id="pass-input"></div>
                 <button class="login-btn" style="background:var(--oscuro); color:white;" onclick="procesarLogin()">ENTRAR</button>
-                <p onclick="mostrarOpciones()" style="font-size:12px; color:#888; cursor:pointer;">Volver</p>
+                <p onclick="mostrarOpciones()" style="font-size:12px; color:#888; cursor:pointer; margin-top:15px;">← Volver</p>
             </div>
+
             <div id="login-opciones">
-                <button class="login-btn" onclick="login('empleado')">EMPLEADO</button>
-                <button class="login-btn" onclick="mostrarForm('gerente')">GERENTE</button>
+                <button class="login-btn" style="background:#eee" onclick="login('empleado')">EMPLEADO</button>
+                <button class="login-btn" style="background:#eee" onclick="mostrarForm('gerente')">GERENTE</button>
                 <button class="login-btn" style="background:var(--oscuro); color:white;" onclick="mostrarForm('jefe')">DIRECTOR</button>
             </div>
         </div>
@@ -68,6 +92,9 @@
 
     <div id="main-app">
         <div class="sidebar">
+            <div style="text-align:center; padding-bottom:20px; margin-bottom:10px;">
+                <h2 style="font-size:18px;">THE <span style="color:var(--primario)">ONE</span></h2>
+            </div>
             <nav style="flex:1; display:flex; flex-direction: inherit;">
                 <div id="nav-clientes" class="nav-item active" onclick="verSeccion('clientes', this)"><i class="ti ti-users"></i> <span>Clientes</span></div>
                 <div id="nav-materiales" class="nav-item solo-jefe hidden" onclick="verSeccion('materiales', this)"><i class="ti ti-package"></i> <span>Gastos</span></div>
@@ -75,32 +102,112 @@
                 <div class="nav-item" onclick="location.reload()" style="color:#ff4d4d"><i class="ti ti-logout"></i> <span>Salir</span></div>
             </nav>
         </div>
+
         <div class="main">
             <div class="topbar">
-                <div id="rol-tag" style="font-size:10px; border:1px solid #ddd; padding:5px 15px; border-radius:20px;">ROLE</div>
-                <button id="btn-agregar-cli" class="btn-accion hidden" onclick="abrirModal('modal-nuevo', true)">+ CLIENTE</button>
+                <div id="rol-tag" style="font-size:9px; font-weight:800; border:1px solid #ddd; padding:4px 12px; border-radius:20px; background:#f9f9f9;">ROLE</div>
+                <button id="btn-agregar-cli" class="btn-accion hidden" onclick="abrirModal('modal-nuevo', true)">+ NUEVO CLIENTE</button>
             </div>
+
             <div id="sec-clientes" class="content-section active">
-                <div class="card"><table><thead><tr><th>CLIENTE</th><th>SERVICIO</th><th>PAGOS</th></tr></thead><tbody id="lista-clientes-body"></tbody></table></div>
+                <h1 style="margin: 10px 0 20px 0; font-size: 22px;">Cartera</h1>
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>CLIENTE</th><th>SERVICIO</th><th>PAGOS</th><th class="solo-jefe hidden">×</th></tr></thead>
+                            <tbody id="lista-clientes-body"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
+
+            <div id="sec-materiales" class="content-section">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin: 10px 0 20px 0;">
+                    <h1 style="font-size: 22px;">Gastos</h1>
+                    <button class="btn-accion" onclick="abrirModal('modal-material', true)">+ REGISTRAR</button>
+                </div>
+                <div class="card">
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>FECHA</th><th>ARTÍCULO</th><th>CATEGORÍA</th><th>COSTO</th></tr></thead>
+                            <tbody id="lista-materiales-body"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
+
+            <div id="sec-finanzas" class="content-section">
+                <h1 style="margin: 10px 0 20px 0; font-size: 22px;">Balance</h1>
+                <div id="dash-jefe" class="hidden">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                        <div class="card" style="margin-bottom:0; text-align:center;"><p style="font-size:9px; color:#888;">INGRESOS</p><h3 id="f-ingresos" style="color:green">$0</h3></div>
+                        <div class="card" style="margin-bottom:0; text-align:center;"><p style="font-size:9px; color:#888;">GASTOS</p><h3 id="f-gastos" style="color:red">$0</h3></div>
+                    </div>
+                    <div class="card" style="text-align:center; border-top-color: #000;"><p style="font-size:9px; color:#888;">UTILIDAD NETA</p><h2 id="f-neto" style="color:var(--primario)">$0</h2></div>
+                </div>
+                <div class="card">
+                    <h4 style="margin-bottom:15px; font-size:11px; color:#888;">RENDIMIENTO POR SERVICIO</h4>
+                    <div id="barras-servicios"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-nuevo" class="modal-overlay">
+        <div class="card" style="width:100%; max-width:400px;">
+            <h2>Nuevo Registro</h2><br>
+            <div class="input-group"><label>Nombre</label><input type="text" id="in-nombre"></div>
+            <div class="input-group">
+                <label>Servicio</label>
+                <select id="in-serv">
+                    <option>Graduación</option><option>Bodas</option><option>Maternidad</option>
+                    <option>Retratos</option><option>XV Años</option><option>Personales</option><option>Infantiles</option>
+                </select>
+            </div>
+            <div class="input-group"><label>Pago Inicial ($)</label><input type="number" id="in-pago-inicial"></div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <button class="btn-accion" style="background:#eee; color:#333; flex:1;" onclick="abrirModal('modal-nuevo', false)">Cerrar</button>
+                <button class="btn-accion" style="flex:1;" onclick="crearCliente()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-material" class="modal-overlay">
+        <div class="card" style="width:100%; max-width:400px;">
+            <h2>Registrar Gasto</h2><br>
+            <div class="input-group"><label>Artículo</label><input type="text" id="mat-nombre"></div>
+            <div class="input-group"><label>Categoría</label><select id="mat-cat"><option>Equipo</option><option>Consumibles</option><option>Mantenimiento</option></select></div>
+            <div class="input-group"><label>Costo ($)</label><input type="number" id="mat-costo"></div>
+            <div style="display:flex; gap:10px; margin-top:10px;"><button class="btn-accion" style="background:#eee; color:#333; flex:1;" onclick="abrirModal('modal-material', false)">Cerrar</button><button class="btn-accion" style="flex:1;" onclick="registrarMaterial()">Guardar</button></div>
+        </div>
+    </div>
+
+    <div id="panel-cobro" class="panel-derecho">
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 id="det-nombre">-</h2>
+            <button style="border:none; background:#eee; width:35px; height:35px; border-radius:50%; cursor:pointer;" onclick="cerrarPanel()">×</button>
+        </div>
+        <p id="det-serv" style="color: var(--primario); font-weight: 700; margin-bottom: 30px;">-</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h4>PAGOS</h4>
+            <button class="btn-accion" style="padding:8px 15px;" onclick="registrarPago()">+ COBRAR</button>
+        </div>
+        <div id="lista-pagos-det"></div>
     </div>
 
     <script>
-        // ESTE SCRIPT REGISTRA LA APP EN EL CELULAR
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js');
-        }
+        // Registro de PWA
+        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); }
 
-        let clientes = JSON.parse(localStorage.getItem('theOne_pwa_v1')) || [];
-        let materiales = JSON.parse(localStorage.getItem('theOne_pwa_mats_v1')) || [];
+        let clientes = JSON.parse(localStorage.getItem('theOne_gh_v1')) || [];
+        let materiales = JSON.parse(localStorage.getItem('theOne_mats_gh_v1')) || [];
         let rol = '';
         let intentType = '';
         let cliActivo = null;
 
         function salvar() {
-            localStorage.setItem('theOne_pwa_v1', JSON.stringify(clientes));
-            localStorage.setItem('theOne_pwa_mats_v1', JSON.stringify(materiales));
+            localStorage.setItem('theOne_gh_v1', JSON.stringify(clientes));
+            localStorage.setItem('theOne_mats_gh_v1', JSON.stringify(materiales));
         }
 
         function mostrarForm(tipo) {
@@ -120,7 +227,7 @@
             const p = document.getElementById('pass-input').value;
             if(intentType === 'jefe' && u === 'admin' && p === '1234') login('jefe');
             else if(intentType === 'gerente' && u === 'gerente01' && p === 'theone2026') login('gerente');
-            else alert("Error de acceso");
+            else alert("Acceso denegado");
         }
 
         function login(tipo) {
@@ -131,6 +238,7 @@
             if(tipo === 'jefe' || tipo === 'gerente') document.getElementById('btn-agregar-cli').classList.remove('hidden');
             if(tipo === 'jefe') {
                 document.querySelectorAll('.solo-jefe').forEach(el => el.classList.remove('hidden'));
+                document.getElementById('dash-jefe').classList.remove('hidden');
             }
             actualizarTodo();
         }
@@ -140,18 +248,111 @@
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('sec-' + id).classList.add('active');
             el.classList.add('active');
+            cerrarPanel();
         }
 
         function actualizarTodo() {
             const cBody = document.getElementById('lista-clientes-body');
             cBody.innerHTML = '';
             clientes.forEach(c => {
-                cBody.innerHTML += `<tr onclick="mostrarDetalles(${c.id})"><td><strong>${c.nombre}</strong></td><td>${c.servicio}</td><td>${c.pagos.length}</td></tr>`;
+                const tr = document.createElement('tr');
+                tr.onclick = (e) => { if(e.target.tagName !== 'I') mostrarDetalles(c.id); };
+                tr.innerHTML = `<td><strong>${c.nombre}</strong></td><td>${c.servicio}</td><td>${c.pagos.length}</td>
+                <td class="${rol !== 'jefe' ? 'hidden' : ''}"><i class="ti ti-trash" style="color:red; font-size:18px;" onclick="borrarCliente(${c.id})"></i></td>`;
+                cBody.appendChild(tr);
+            });
+
+            const mBody = document.getElementById('lista-materiales-body');
+            mBody.innerHTML = '';
+            let totalG = 0;
+            materiales.forEach(m => {
+                totalG += m.costo;
+                mBody.innerHTML += `<tr><td>${m.fecha}</td><td>${m.nombre}</td><td>${m.cat}</td><td>$${m.costo}</td></tr>`;
+            });
+
+            let totalI = 0;
+            clientes.forEach(c => c.pagos.forEach(p => totalI += p.monto));
+
+            if(rol === 'jefe') {
+                document.getElementById('f-ingresos').innerText = `$${totalI}`;
+                document.getElementById('f-gastos').innerText = `$${totalG}`;
+                document.getElementById('f-neto').innerText = `$${totalI - totalG}`;
+            }
+            renderBarras(totalI);
+        }
+
+        function crearCliente() {
+            const nom = document.getElementById('in-nombre').value;
+            const pago = parseFloat(document.getElementById('in-pago-inicial').value) || 0;
+            if(!nom) return alert("Nombre necesario");
+            clientes.push({ 
+                id: Date.now(), nombre: nom, servicio: document.getElementById('in-serv').value, 
+                pagos: [{ monto: pago, fecha: new Date().toLocaleDateString(), por: rol }] 
+            });
+            salvar();
+            document.getElementById('in-nombre').value = '';
+            document.getElementById('in-pago-inicial').value = '';
+            abrirModal('modal-nuevo', false);
+            actualizarTodo();
+        }
+
+        function registrarMaterial() {
+            const nom = document.getElementById('mat-nombre').value;
+            const cos = parseFloat(document.getElementById('mat-costo').value);
+            if(!nom || isNaN(cos)) return alert("Error en datos");
+            materiales.push({ nombre: nom, cat: document.getElementById('mat-cat').value, costo: cos, fecha: new Date().toLocaleDateString() });
+            salvar();
+            document.getElementById('mat-nombre').value = '';
+            document.getElementById('mat-costo').value = '';
+            abrirModal('modal-material', false);
+            actualizarTodo();
+        }
+
+        function mostrarDetalles(id) {
+            cliActivo = clientes.find(c => c.id === id);
+            document.getElementById('det-nombre').innerText = cliActivo.nombre;
+            document.getElementById('det-serv').innerText = cliActivo.servicio;
+            renderPagos();
+            document.getElementById('panel-cobro').classList.add('open');
+        }
+
+        function registrarPago() {
+            const m = prompt("Monto cobrado:");
+            if(m && !isNaN(m)) {
+                cliActivo.pagos.push({ monto: parseFloat(m), fecha: new Date().toLocaleDateString(), por: rol });
+                salvar();
+                renderPagos();
+                actualizarTodo();
+            }
+        }
+
+        function renderPagos() {
+            document.getElementById('lista-pagos-det').innerHTML = cliActivo.pagos.map(p => `
+                <div style="background:#f9f9f9; padding:12px; border:1px solid #eee; margin-bottom:8px; border-radius:10px;">
+                    <div style="display:flex; justify-content:space-between;"><strong>$${p.monto}</strong> <span style="font-size:10px; color:#aaa;">${p.fecha}</span></div>
+                    <div style="font-size:10px; color:#888;">Por: ${p.por}</div>
+                </div>
+            `).join('');
+        }
+
+        function borrarCliente(id) {
+            if(confirm("¿Eliminar cliente?")) { clientes = clientes.filter(c => c.id !== id); salvar(); actualizarTodo(); }
+        }
+
+        function renderBarras(total) {
+            const bCont = document.getElementById('barras-servicios');
+            if(!bCont) return;
+            bCont.innerHTML = '';
+            ["Graduación", "Bodas", "Maternidad", "Retratos", "XV Años", "Personales", "Infantiles"].forEach(t => {
+                let suma = 0;
+                clientes.filter(c => c.servicio === t).forEach(c => c.pagos.forEach(p => suma += p.monto));
+                let p = total > 0 ? (suma / total) * 100 : 0;
+                bCont.innerHTML += `<div style="margin-bottom:12px; font-size:11px;">${t} ($${suma})<div style="height:6px; background:#eee; border-radius:10px; margin-top:4px;"><div style="width:${p}%; height:100%; background:var(--primario); border-radius:10px;"></div></div></div>`;
             });
         }
-        
-        // El resto de funciones (crearCliente, registrarPago, etc) se mantienen igual que la versión anterior.
-        // Solo asegúrate de copiar las lógicas de guardado y visualización.
+
+        function abrirModal(id, s) { document.getElementById(id).classList.toggle('active', s); }
+        function cerrarPanel() { document.getElementById('panel-cobro').classList.remove('open'); }
     </script>
 </body>
 </html>
