@@ -3,290 +3,373 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The One System</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>The One System - Panel</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
     
     <style>
-        :root { --primario: #e60000; --oscuro: #0a0a0a; --blanco: #ffffff; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        
-        body { background: #f4f4f4; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-        
-        /* LOGIN MODERNO */
-        #login-page { position: fixed; inset: 0; background: var(--oscuro); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .login-card { background: var(--blanco); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; margin-bottom: 10px; font-size: 16px; }
-        
-        /* APP LAYOUT REFORZADO PARA MÓVIL */
-        #main-app { display: none; height: 100vh; width: 100%; flex-direction: column; }
-        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .topbar { background: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; z-index: 10; }
-        
-        /* NAVEGACIÓN INFERIOR (ESTILO APP REAL) */
-        .nav-bar { height: 75px; background: var(--oscuro); display: flex; border-top: 3px solid var(--primario); padding-bottom: env(safe-area-inset-bottom); }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #888; font-size: 11px; text-decoration: none; cursor: pointer; }
-        .nav-item.active { color: white; background: rgba(230,0,0,0.2); }
-        .nav-item i { font-size: 24px; margin-bottom: 4px; }
+        :root {
+            --primario: #d32f2f; /* Rojo de los tassels */
+            --oscuro: #121212;
+            --gris-fondo: #f5f5f7;
+            --gris-borde: #e0e0e0;
+            --blanco: #ffffff;
+            --texto-secundario: #757575;
+        }
 
-        /* SECCIONES */
-        .content-section { display: none; flex: 1; overflow-y: auto; padding: 20px; -webkit-overflow-scrolling: touch; }
-        .content-section.active { display: block; }
-        .card { background: white; padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        
-        /* TABLAS MÓVILES */
-        .table-responsive { width: 100%; overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 10px; font-size: 12px; color: #999; border-bottom: 1px solid #eee; }
-        td { padding: 15px 10px; border-bottom: 1px solid #f9f9f9; font-size: 14px; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        /* PANELES DESLIZANTES */
-        .panel { position: fixed; inset: 0; background: white; transform: translateY(100%); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 500; padding: 25px; }
-        .panel.open { transform: translateY(0); }
-        
-        .hidden { display: none !important; }
-        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; margin: 10px 0; font-size: 16px; }
+        body {
+            background-color: var(--gris-fondo);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Contenedor tipo teléfono (opcional para escritorio, necesario para imitar la imagen) */
+        .phone-emulator {
+            width: 100%;
+            max-width: 380px;
+            height: 100%;
+            max-height: 800px;
+            background: var(--gris-fondo);
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 12px solid #333; /* Borde del teléfono */
+            position: relative;
+        }
+
+        /* Notch del teléfono */
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 18px;
+            background: #333;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            z-index: 100;
+        }
+
+        /* Barra de estado */
+        .status-bar {
+            height: 35px;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--gris-fondo);
+            color: #000;
+            z-index: 90;
+            padding-top: 10px;
+        }
+
+        /* Topbar de la App */
+        .topbar {
+            background: var(--gris-fondo);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .topbar h1 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--texto-secundario);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .topbar-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        /* Contenedor Principal con Scroll */
+        .main-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            padding-bottom: 80px; /* Espacio para la nav */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Sección del Logo */
+        .logo-section {
+            text-align: center;
+            padding: 10px 0 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .logo-svg {
+            width: 70%;
+            max-width: 250px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .slogan {
+            font-family: "Georgia", serif;
+            font-style: italic;
+            font-size: 13px;
+            color: var(--texto-secundario);
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+
+        /* Buscador */
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9e9e9e;
+            font-size: 16px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 10px 10px 35px;
+            border: 1px solid var(--gris-borde);
+            border-radius: 8px;
+            background-color: var(--blanco);
+            font-size: 14px;
+        }
+
+        /* Lista de Clientes */
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 0 5px;
+        }
+
+        .list-header h2 {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .tag {
+            background-color: #424242;
+            color: var(--blanco);
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .client-card {
+            background-color: var(--blanco);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            border: 1px solid #f0f0f0;
+        }
+
+        .client-card h3 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .client-info-row {
+            display: flex;
+            font-size: 11px;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .info-label {
+            color: var(--texto-secundario);
+            width: 70px;
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-weight: 600;
+        }
+
+        /* Navegación Inferior */
+        .nav-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 65px;
+            background: var(--blanco);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid var(--gris-borde);
+            padding-bottom: env(safe-area-inset-bottom);
+            z-index: 80;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #bdbdbd;
+            font-size: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            width: 20%;
+        }
+
+        .nav-item.active {
+            color: var(--primario);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        /* Ocultar barra de scroll */
+        .main-container::-webkit-scrollbar {
+            display: none;
+        }
     </style>
 </head>
 <body>
 
-    <div id="login-page">
-        <div class="login-card">
-            <h1 style="margin-bottom:30px; letter-spacing: 2px;">THE ONE</h1>
-            <div id="login-menu">
-                <button class="btn" style="background:#eee" onclick="login('empleado')">EMPLEADO</button>
-                <button class="btn" style="background:#eee" onclick="showAuth('gerente')">GERENTE</button>
-                <button class="btn" style="background:var(--oscuro); color:white" onclick="showAuth('jefe')">DIRECTOR</button>
-            </div>
-            <div id="login-auth" class="hidden">
-                <h4 id="auth-title" style="color:var(--primario); margin-bottom:15px;"></h4>
-                <input type="text" id="user" placeholder="Usuario" autofocus>
-                <input type="password" id="pass" placeholder="Contraseña">
-                <button class="btn" style="background:var(--primario); color:white" onclick="checkAuth()">ENTRAR</button>
-                <p onclick="location.reload()" style="margin-top:15px; font-size:12px; color:gray">← Volver</p>
+    <div class="phone-emulator">
+        <div class="phone-notch"></div>
+        
+        <div class="status-bar">
+            <span>9:41</span>
+            <div style="display: flex; gap: 4px;">
+                <i class="ti ti-antenna-bars-5"></i>
+                <i class="ti ti-wifi"></i>
+                <i class="ti ti-battery-4"></i>
             </div>
         </div>
-    </div>
 
-    <div id="main-app">
         <div class="topbar">
-            <span id="user-display" style="font-weight: 800; font-size: 12px; border: 1px solid #eee; padding: 4px 10px; border-radius: 20px;">ROL</span>
-            <button id="add-cli-btn" class="btn hidden" style="width:auto; margin:0; padding:8px 15px; background:var(--oscuro); color:white" onclick="openMod('mod-cli', true)">+ NUEVO</button>
+            <button class="topbar-btn"><i class="ti ti-menu-2"></i></button>
+            <h1>Clientes</h1>
+            <button class="topbar-btn"><i class="ti ti-settings"></i></button>
         </div>
 
-        <div class="main">
-            <div id="sec-clientes" class="content-section active">
-                <h2 style="margin-bottom:15px;">Cartera</h2>
-                <div class="card">
-                    <div class="table-responsive">
-                        <table>
-                            <thead><tr><th>CLIENTE</th><th>SERVICIO</th><th>PAGOS</th></tr></thead>
-                            <tbody id="lista-cli"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="sec-materiales" class="content-section">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                    <h2>Gastos</h2>
-                    <button class="btn" style="width:auto; margin:0; padding:8px 15px; background:var(--primario); color:white" onclick="openMod('mod-mat', true)">+ REGISTRAR</button>
-                </div>
-                <div class="card">
-                    <div class="table-responsive">
-                        <table>
-                            <thead><tr><th>FECHA</th><th>ITEM</th><th>COSTO</th></tr></thead>
-                            <tbody id="lista-mat"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div id="sec-balance" class="content-section">
-                <h2 style="margin-bottom:15px;">Balance</h2>
-                <div id="stats-jefe" class="hidden">
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
-                        <div class="card" style="text-align:center;"><small>INGRESOS</small><h3 id="tot-in" style="color:green">$0</h3></div>
-                        <div class="card" style="text-align:center;"><small>EGRESOS</small><h3 id="tot-out" style="color:red">$0</h3></div>
-                    </div>
-                </div>
-                <div class="card">
-                    <h4 style="margin-bottom:15px; color:#888;">RENDIMIENTO POR SERVICIO</h4>
-                    <div id="grafico"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="nav-bar">
-            <div class="nav-item active" onclick="tab('clientes', this)"><i class="ti ti-users"></i><span>Clientes</span></div>
-            <div id="nav-mat" class="nav-item solo-jefe hidden" onclick="tab('materiales', this)"><i class="ti ti-box"></i><span>Gastos</span></div>
-            <div class="nav-item" onclick="tab('balance', this)"><i class="ti ti-chart-pie"></i><span>Balance</span></div>
-            <div class="nav-item" onclick="location.reload()" style="color:var(--primario)"><i class="ti ti-logout"></i><span>Salir</span></div>
-        </div>
-    </div>
-
-    <div id="mod-cli" class="panel">
-        <h2>Nuevo Cliente</h2>
-        <input type="text" id="n-cli" placeholder="Nombre Completo">
-        <select id="s-cli">
-            <option>Graduación</option><option>Bodas</option><option>XV Años</option><option>Retrato</option><option>Infantil</option>
-        </select>
-        <input type="number" id="p-cli" placeholder="Pago inicial ($)">
-        <button class="btn" style="background:var(--oscuro); color:white" onclick="addCli()">GUARDAR</button>
-        <button class="btn" style="background:#eee" onclick="openMod('mod-cli', false)">CANCELAR</button>
-    </div>
-
-    <div id="mod-mat" class="panel">
-        <h2>Registrar Gasto</h2>
-        <input type="text" id="n-mat" placeholder="¿Qué se compró?">
-        <input type="number" id="c-mat" placeholder="Costo total ($)">
-        <button class="btn" style="background:var(--oscuro); color:white" onclick="addMat()">GUARDAR GASTO</button>
-        <button class="btn" style="background:#eee" onclick="openMod('mod-mat', false)">CANCELAR</button>
-    </div>
-
-    <div id="panel-pagos" class="panel">
-        <h2 id="pago-nom">Cliente</h2>
-        <p id="pago-serv" style="color:var(--primario); font-weight: bold; margin-bottom: 20px;"></p>
-        <button class="btn" style="background:green; color:white" onclick="nuevoPago()">+ REGISTRAR COBRO</button>
-        <div id="historial-pagos" style="margin-top:20px; max-height: 50vh; overflow-y: auto;"></div>
-        <button class="btn" style="margin-top:20px" onclick="document.getElementById('panel-pagos').classList.remove('open')">CERRAR</button>
-    </div>
-
-    <script>
-        // REGISTRO DE SERVICE WORKER (Para permitir instalación)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then(reg => {
-                    console.log('App lista para instalar');
-                }).catch(err => console.log('Error de instalación', err));
-            });
-        }
-
-        let db_c = JSON.parse(localStorage.getItem('theone_c_v3')) || [];
-        let db_m = JSON.parse(localStorage.getItem('theone_m_v3')) || [];
-        let cur_rol = '';
-        let cur_type = '';
-        let cur_cli = null;
-
-        function showAuth(t) {
-            cur_type = t;
-            document.getElementById('auth-title').innerText = "ACCESO " + t.toUpperCase();
-            document.getElementById('login-menu').classList.add('hidden');
-            document.getElementById('login-auth').classList.remove('hidden');
-        }
-
-        function checkAuth() {
-            const u = document.getElementById('user').value;
-            const p = document.getElementById('pass').value;
-            if(cur_type === 'jefe' && u === 'admin' && p === '1234') login('jefe');
-            else if(cur_type === 'gerente' && u === 'gerente01' && p === 'theone2026') login('gerente');
-            else alert("Error: Datos incorrectos");
-        }
-
-        function login(r) {
-            cur_rol = r;
-            document.getElementById('login-page').style.display = 'none';
-            document.getElementById('main-app').style.display = 'flex';
-            document.getElementById('user-display').innerText = "MODO: " + r.toUpperCase();
+        <div class="main-container">
             
-            if(r === 'jefe' || r === 'gerente') document.getElementById('add-cli-btn').classList.remove('hidden');
-            if(r === 'jefe') {
-                document.getElementById('nav-mat').classList.remove('hidden');
-                document.getElementById('stats-jefe').classList.remove('hidden');
-                document.querySelectorAll('.solo-jefe').forEach(el => el.classList.remove('hidden'));
-            }
-            render();
-        }
+            <div class="logo-section">
+                <svg class="logo-svg" viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M200 10 L330 50 L200 90 L70 50 Z" fill="#212121"/>
+                    <path d="M110 65 L110 110 C110 120, 290 120, 290 110 L290 65" fill="#212121"/>
+                    <circle cx="95" cy="58" r="6" fill="#b71c1c"/>
+                    <path d="M95 64 L90 95 L100 95 Z" fill="#b71c1c"/>
+                    
+                    <text x="140" y="115" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#000000">The</text>
+                    <text x="190" y="165" font-family="Arial, sans-serif" font-size="90" font-weight="900" fill="#000000">ONE</text>
+                    <g transform="translate(195, 105) scale(0.65)">
+                        <rect x="10" y="25" width="80" height="55" rx="5" fill="#212121"/>
+                        <rect x="35" y="15" width="30" height="10" fill="#212121"/>
+                        <circle cx="50" cy="52" r="22" fill="#fff" stroke="#212121" stroke-width="4"/>
+                        <circle cx="50" cy="52" r="12" fill="#212121"/>
+                        <circle cx="25" cy="38" r="3" fill="#b71c1c"/>
+                    </g>
+                    
+                    <rect x="100" y="170" width="200" height="25" fill="#000000"/>
+                    <text x="200" y="188" font-family="Arial, sans-serif" font-size="18" fill="#ffffff" text-anchor="middle" letter-spacing="2">FOTOGRAFÍA</text>
+                </svg>
+                <p class="slogan">Arte en Cada Captura,<br>Emoción en Cada Imagen</p>
+            </div>
 
-        function tab(id, el) {
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('sec-' + id).classList.add('active');
-            el.classList.add('active');
-        }
+            <div class="search-container">
+                <i class="ti ti-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Buscar">
+            </div>
 
-        function addCli() {
-            const n = document.getElementById('n-cli').value;
-            const p = parseFloat(document.getElementById('p-cli').value) || 0;
-            if(!n) return alert("Nombre obligatorio");
-            db_c.push({ id: Date.now(), nom: n, serv: document.getElementById('s-cli').value, pagos: [{m:p, f: new Date().toLocaleDateString()}] });
-            save(); openMod('mod-cli', false); render();
-            document.getElementById('n-cli').value = '';
-            document.getElementById('p-cli').value = '';
-        }
+            <div class="list-header">
+                <h2>Lista de Clientes</h2>
+                <span class="tag">Carteras</span>
+            </div>
 
-        function addMat() {
-            const n = document.getElementById('n-mat').value;
-            const c = parseFloat(document.getElementById('c-mat').value) || 0;
-            if(!n || !c) return alert("Completa los datos");
-            db_m.push({ n, c, f: new Date().toLocaleDateString() });
-            save(); openMod('mod-mat', false); render();
-            document.getElementById('n-mat').value = '';
-            document.getElementById('c-mat').value = '';
-        }
+            <div class="client-card">
+                <h3>Adon Smits</h3>
+                <div class="client-info-row">
+                    <span class="info-label">Nombre:</span>
+                    <span class="info-value">Canto Santa</span>
+                </div>
+                <div class="client-info-row">
+                    <span class="info-label">Datamiento:</span>
+                    <span class="info-value">362672920</span>
+                </div>
+                <div class="client-info-row">
+                    <span class="info-label">Data:</span>
+                    <span class="info-value">Cliente</span>
+                </div>
+            </div>
 
-        function render() {
-            const l_c = document.getElementById('lista-cli');
-            l_c.innerHTML = '';
-            let total_in = 0;
-            db_c.forEach(c => {
-                let suma = 0; c.pagos.forEach(p => { suma += p.m; total_in += p.m; });
-                l_c.innerHTML += `<tr onclick="detalles(${c.id})"><td><b>${c.nom}</b></td><td>${c.serv}</td><td>$${suma}</td></tr>`;
-            });
+            <div class="client-card">
+                <h3>Janes Flarics</h3>
+                <div class="client-info-row">
+                    <span class="info-label">Nombre:</span>
+                    <span class="info-value">Jehila Moarato</span>
+                </div>
+                <div class="client-info-row">
+                    <span class="info-label">Datamiento:</span>
+                    <span class="info-value">052672370</span>
+                </div>
+                <div class="client-info-row">
+                    <span class="info-label">Data:</span>
+                    <span class="info-value">Cliente</span>
+                </div>
+            </div>
 
-            const l_m = document.getElementById('lista-mat');
-            l_m.innerHTML = '';
-            let total_out = 0;
-            db_m.forEach(m => {
-                total_out += m.c;
-                l_m.innerHTML += `<tr><td>${m.f}</td><td>${m.n}</td><td style="color:red">-$${m.c}</td></tr>`;
-            });
+        </div>
 
-            document.getElementById('tot-in').innerText = '$' + total_in;
-            document.getElementById('tot-out').innerText = '$' + total_out;
-            renderGraf(total_in);
-        }
+        <nav class="nav-bar">
+            <a href="#" class="nav-item active">
+                <i class="ti ti-users"></i>
+                <span>Clientes</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="ti ti-camera"></i>
+                <span>Gastos</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="ti ti-wallet"></i>
+                <span>Balance</span>
+            </a>
+            <a href="#" class="nav-item">
+                <i class="ti ti-logout"></i>
+                <span>Salir</span>
+            </a>
+        </nav>
+    </div>
 
-        function detalles(id) {
-            cur_cli = db_c.find(x => x.id === id);
-            document.getElementById('pago-nom').innerText = cur_cli.nom;
-            document.getElementById('pago-serv').innerText = cur_cli.serv;
-            const h = document.getElementById('historial-pagos');
-            h.innerHTML = cur_cli.pagos.map(p => `
-                <div style="padding:15px; background:#f9f9f9; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <div><b>$${p.m}</b><br><small style="color:gray">${p.f}</small></div>
-                    <i class="ti ti-check" style="color:green"></i>
-                </div>`).join('');
-            document.getElementById('panel-pagos').classList.add('open');
-        }
-
-        function nuevoPago() {
-            const m = parseFloat(prompt("Monto del nuevo cobro:"));
-            if(m && !isNaN(m)) {
-                cur_cli.pagos.push({m, f: new Date().toLocaleDateString()});
-                save(); detalles(cur_cli.id); render();
-            }
-        }
-
-        function renderGraf(total) {
-            const g = document.getElementById('grafico');
-            g.innerHTML = '';
-            ["Graduación", "Bodas", "XV Años", "Retrato", "Infantil"].forEach(s => {
-                let suma = 0;
-                db_c.filter(x => x.serv === s).forEach(x => x.pagos.forEach(p => suma += p.m));
-                let por = total > 0 ? (suma / total) * 100 : 0;
-                g.innerHTML += `<div style="margin-bottom:15px"><div style="display:flex; justify-content:space-between; font-size:12px;"><span>${s}</span><span>$${suma}</span></div><div style="height:10px; background:#eee; border-radius:10px; margin-top:5px; overflow:hidden;"><div style="width:${por}%; height:100%; background:var(--primario);"></div></div></div>`;
-            });
-        }
-
-        function save() {
-            localStorage.setItem('theone_c_v3', JSON.stringify(db_c));
-            localStorage.setItem('theone_m_v3', JSON.stringify(db_m));
-        }
-
-        function openMod(id, s) { document.getElementById(id).classList.toggle('open', s); }
-    </script>
 </body>
 </html>
