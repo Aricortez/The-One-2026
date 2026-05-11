@@ -3,373 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>The One System - Panel</title>
+    <title>The One System</title>
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
     
     <style>
-        :root {
-            --primario: #d32f2f; /* Rojo de los tassels */
-            --oscuro: #121212;
-            --gris-fondo: #f5f5f7;
-            --gris-borde: #e0e0e0;
-            --blanco: #ffffff;
-            --texto-secundario: #757575;
-        }
+        :root { --primario: #d32f2f; --oscuro: #121212; --blanco: #ffffff; --gris-fondo: #f5f5f7; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { background: var(--gris-fondo); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
+        /* --- LOGIN --- */
+        #login-page { position: fixed; inset: 0; background: var(--oscuro); z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-card { background: var(--blanco); padding: 30px; border-radius: 20px; width: 100%; max-width: 350px; text-align: center; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; margin-bottom: 10px; font-size: 16px; }
 
-        body {
-            background-color: var(--gris-fondo);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
+        /* --- APP STRUCTURE --- */
+        #main-app { display: none; height: 100vh; flex-direction: column; position: relative; }
+        
+        .topbar { background: var(--blanco); padding: 15px; border-bottom: 1px solid #ddd; display: flex; flex-direction: column; gap: 10px; }
+        .top-row { display: flex; justify-content: space-between; align-items: center; }
+        
+        /* BUSCADOR */
+        .search-wrapper { position: relative; width: 100%; }
+        .search-wrapper i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #888; }
+        .search-input { width: 100%; padding: 12px 12px 12px 40px; border-radius: 10px; border: 1px solid #ddd; background: #f9f9f9; font-size: 14px; }
 
-        /* Contenedor tipo teléfono (opcional para escritorio, necesario para imitar la imagen) */
-        .phone-emulator {
-            width: 100%;
-            max-width: 380px;
-            height: 100%;
-            max-height: 800px;
-            background: var(--gris-fondo);
-            border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            border: 12px solid #333; /* Borde del teléfono */
-            position: relative;
-        }
+        /* CONTENIDO */
+        .main-content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 80px; }
+        .card { background: var(--blanco); padding: 15px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 10px; font-size: 11px; color: #999; text-transform: uppercase; }
+        td { padding: 15px 10px; border-bottom: 1px solid #f5f5f5; font-size: 14px; }
 
-        /* Notch del teléfono */
-        .phone-notch {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 18px;
-            background: #333;
-            border-bottom-left-radius: 15px;
-            border-bottom-right-radius: 15px;
-            z-index: 100;
-        }
+        /* NAVEGACIÓN */
+        .nav-bar { position: absolute; bottom: 0; width: 100%; height: 70px; background: var(--blanco); display: flex; border-top: 1px solid #ddd; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #bbb; font-size: 10px; cursor: pointer; }
+        .nav-item.active { color: var(--primario); }
+        .nav-item i { font-size: 24px; margin-bottom: 2px; }
 
-        /* Barra de estado */
-        .status-bar {
-            height: 35px;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            font-weight: 600;
-            background: var(--gris-fondo);
-            color: #000;
-            z-index: 90;
-            padding-top: 10px;
-        }
+        /* PANELES DESLIZANTES */
+        .panel { position: fixed; inset: 0; background: var(--blanco); transform: translateY(100%); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; padding: 25px; overflow-y: auto; }
+        .panel.open { transform: translateY(0); }
+        
+        .hidden { display: none !important; }
+        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; margin: 10px 0; font-size: 16px; }
 
-        /* Topbar de la App */
-        .topbar {
-            background: var(--gris-fondo);
-            padding: 10px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 10;
-        }
-
-        .topbar h1 {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--texto-secundario);
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .topbar-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: #333;
-            cursor: pointer;
-        }
-
-        /* Contenedor Principal con Scroll */
-        .main-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            padding-bottom: 80px; /* Espacio para la nav */
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Sección del Logo */
-        .logo-section {
-            text-align: center;
-            padding: 10px 0 20px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .logo-svg {
-            width: 70%;
-            max-width: 250px;
-            height: auto;
-            margin-bottom: 10px;
-        }
-
-        .slogan {
-            font-family: "Georgia", serif;
-            font-style: italic;
-            font-size: 13px;
-            color: var(--texto-secundario);
-            margin-top: 5px;
-            line-height: 1.4;
-        }
-
-        /* Buscador */
-        .search-container {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #9e9e9e;
-            font-size: 16px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 10px 10px 10px 35px;
-            border: 1px solid var(--gris-borde);
-            border-radius: 8px;
-            background-color: var(--blanco);
-            font-size: 14px;
-        }
-
-        /* Lista de Clientes */
-        .list-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            padding: 0 5px;
-        }
-
-        .list-header h2 {
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .tag {
-            background-color: #424242;
-            color: var(--blanco);
-            font-size: 11px;
-            padding: 3px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            font-weight: 700;
-        }
-
-        .client-card {
-            background-color: var(--blanco);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-            border: 1px solid #f0f0f0;
-        }
-
-        .client-card h3 {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .client-info-row {
-            display: flex;
-            font-size: 11px;
-            color: #333;
-            margin-bottom: 3px;
-        }
-
-        .info-label {
-            color: var(--texto-secundario);
-            width: 70px;
-            font-weight: 500;
-        }
-
-        .info-value {
-            font-weight: 600;
-        }
-
-        /* Navegación Inferior */
-        .nav-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 65px;
-            background: var(--blanco);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            border-top: 1px solid var(--gris-borde);
-            padding-bottom: env(safe-area-inset-bottom);
-            z-index: 80;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: #bdbdbd;
-            font-size: 10px;
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-            width: 20%;
-        }
-
-        .nav-item.active {
-            color: var(--primario);
-        }
-
-        .nav-item i {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-
-        /* Ocultar barra de scroll */
-        .main-container::-webkit-scrollbar {
-            display: none;
-        }
+        /* LOGO EN APP */
+        .app-logo { width: 120px; margin: 0 auto 10px; display: block; }
     </style>
 </head>
 <body>
 
-    <div class="phone-emulator">
-        <div class="phone-notch"></div>
-        
-        <div class="status-bar">
-            <span>9:41</span>
-            <div style="display: flex; gap: 4px;">
-                <i class="ti ti-antenna-bars-5"></i>
-                <i class="ti ti-wifi"></i>
-                <i class="ti ti-battery-4"></i>
-            </div>
-        </div>
-
-        <div class="topbar">
-            <button class="topbar-btn"><i class="ti ti-menu-2"></i></button>
-            <h1>Clientes</h1>
-            <button class="topbar-btn"><i class="ti ti-settings"></i></button>
-        </div>
-
-        <div class="main-container">
+    <div id="login-page">
+        <div class="login-card">
+            <img src="https://i.imgur.com/8YvLh6F.png" alt="Logo" style="width: 180px; margin-bottom: 20px;">
+            <h2 style="margin-bottom: 20px; font-size: 14px; color: #666;">BIENVENIDO A THE ONE</h2>
             
-            <div class="logo-section">
-                <svg class="logo-svg" viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M200 10 L330 50 L200 90 L70 50 Z" fill="#212121"/>
-                    <path d="M110 65 L110 110 C110 120, 290 120, 290 110 L290 65" fill="#212121"/>
-                    <circle cx="95" cy="58" r="6" fill="#b71c1c"/>
-                    <path d="M95 64 L90 95 L100 95 Z" fill="#b71c1c"/>
-                    
-                    <text x="140" y="115" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#000000">The</text>
-                    <text x="190" y="165" font-family="Arial, sans-serif" font-size="90" font-weight="900" fill="#000000">ONE</text>
-                    <g transform="translate(195, 105) scale(0.65)">
-                        <rect x="10" y="25" width="80" height="55" rx="5" fill="#212121"/>
-                        <rect x="35" y="15" width="30" height="10" fill="#212121"/>
-                        <circle cx="50" cy="52" r="22" fill="#fff" stroke="#212121" stroke-width="4"/>
-                        <circle cx="50" cy="52" r="12" fill="#212121"/>
-                        <circle cx="25" cy="38" r="3" fill="#b71c1c"/>
-                    </g>
-                    
-                    <rect x="100" y="170" width="200" height="25" fill="#000000"/>
-                    <text x="200" y="188" font-family="Arial, sans-serif" font-size="18" fill="#ffffff" text-anchor="middle" letter-spacing="2">FOTOGRAFÍA</text>
-                </svg>
-                <p class="slogan">Arte en Cada Captura,<br>Emoción en Cada Imagen</p>
+            <div id="login-menu">
+                <button class="btn" style="background:#f0f0f0" onclick="login('empleado')">EMPLEADO</button>
+                <button class="btn" style="background:#f0f0f0" onclick="showAuth('gerente')">GERENTE</button>
+                <button class="btn" style="background:var(--oscuro); color:white" onclick="showAuth('director')">DIRECTOR</button>
             </div>
-
-            <div class="search-container">
-                <i class="ti ti-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Buscar">
+            
+            <div id="login-auth" class="hidden">
+                <h3 id="auth-title" style="margin-bottom:15px; color:var(--primario)"></h3>
+                <input type="text" id="user" placeholder="Usuario">
+                <input type="password" id="pass" placeholder="Contraseña">
+                <button class="btn" style="background:var(--primario); color:white" onclick="checkAuth()">ENTRAR</button>
+                <p onclick="location.reload()" style="cursor:pointer; font-size:12px; color:gray; margin-top:10px;">← Volver</p>
             </div>
-
-            <div class="list-header">
-                <h2>Lista de Clientes</h2>
-                <span class="tag">Carteras</span>
-            </div>
-
-            <div class="client-card">
-                <h3>Adon Smits</h3>
-                <div class="client-info-row">
-                    <span class="info-label">Nombre:</span>
-                    <span class="info-value">Canto Santa</span>
-                </div>
-                <div class="client-info-row">
-                    <span class="info-label">Datamiento:</span>
-                    <span class="info-value">362672920</span>
-                </div>
-                <div class="client-info-row">
-                    <span class="info-label">Data:</span>
-                    <span class="info-value">Cliente</span>
-                </div>
-            </div>
-
-            <div class="client-card">
-                <h3>Janes Flarics</h3>
-                <div class="client-info-row">
-                    <span class="info-label">Nombre:</span>
-                    <span class="info-value">Jehila Moarato</span>
-                </div>
-                <div class="client-info-row">
-                    <span class="info-label">Datamiento:</span>
-                    <span class="info-value">052672370</span>
-                </div>
-                <div class="client-info-row">
-                    <span class="info-label">Data:</span>
-                    <span class="info-value">Cliente</span>
-                </div>
-            </div>
-
         </div>
-
-        <nav class="nav-bar">
-            <a href="#" class="nav-item active">
-                <i class="ti ti-users"></i>
-                <span>Clientes</span>
-            </a>
-            <a href="#" class="nav-item">
-                <i class="ti ti-camera"></i>
-                <span>Gastos</span>
-            </a>
-            <a href="#" class="nav-item">
-                <i class="ti ti-wallet"></i>
-                <span>Balance</span>
-            </a>
-            <a href="#" class="nav-item">
-                <i class="ti ti-logout"></i>
-                <span>Salir</span>
-            </a>
-        </nav>
     </div>
 
+    <div id="main-app">
+        <div class="topbar">
+            <div class="top-row">
+                <span id="role-tag" style="background:var(--oscuro); color:white; padding:4px 10px; border-radius:20px; font-size:10px; font-weight:bold;">ROL</span>
+                <button id="btn-nuevo-cliente" class="btn hidden" style="width:auto; margin:0; padding:8px 15px; background:var(--primario); color:white" onclick="openMod('mod-cli', true)">+ NUEVO</button>
+            </div>
+            <div class="search-wrapper">
+                <i class="ti ti-search"></i>
+                <input type="text" id="input-busqueda" class="search-input" placeholder="Buscar cliente por nombre..." oninput="render()">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div id="sec-clientes" class="content-section active">
+                <div class="card">
+                    <table>
+                        <thead>
+                            <tr><th>Cliente / Servicio</th><th style="text-align:right">Pagado</th><th id="th-borrar" class="hidden"></th></tr>
+                        </thead>
+                        <tbody id="lista-cli"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="sec-materiales" class="content-section">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h2>Gastos</h2>
+                    <button class="btn" style="width:auto; margin:0; padding:8px 15px; background:var(--oscuro); color:white" onclick="openMod('mod-mat', true)">+ REGISTRAR</button>
+                </div>
+                <div class="card">
+                    <table>
+                        <thead><tr><th>Fecha</th><th>Item</th><th>Costo</th><th></th></tr></thead>
+                        <tbody id="lista-mat"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="sec-balance" class="content-section">
+                <h2 style="margin-bottom:15px;">Balance General</h2>
+                <div class="card" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align:center;">
+                    <div><small>INGRESOS</small><h3 id="tot-in" style="color:green">$0</h3></div>
+                    <div><small>EGRESOS</small><h3 id="tot-out" style="color:red">$0</h3></div>
+                </div>
+                <div class="card">
+                    <h4 style="margin-bottom:15px; color:#888;">RENDIMIENTO</h4>
+                    <div id="grafico"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-bar">
+            <div class="nav-item active" onclick="tab('clientes', this)"><i class="ti ti-users"></i><span>Clientes</span></div>
+            <div id="nav-mat" class="nav-item hidden" onclick="tab('materiales', this)"><i class="ti ti-camera"></i><span>Gastos</span></div>
+            <div id="nav-bal" class="nav-item hidden" onclick="tab('balance', this)"><i class="ti ti-chart-pie"></i><span>Balance</span></div>
+            <div class="nav-item" onclick="location.reload()" style="color:var(--primario)"><i class="ti ti-logout"></i><span>Salir</span></div>
+        </div>
+    </div>
+
+    <div id="mod-cli" class="panel">
+        <h2>Nuevo Cliente</h2>
+        <input type="text" id="n-cli" placeholder="Nombre completo">
+        <select id="s-cli">
+            <option>Graduación</option><option>Bodas</option><option>XV Años</option><option>Retrato</option>
+        </select>
+        <input type="number" id="p-cli" placeholder="Anticipo ($)">
+        <button class="btn" style="background:var(--oscuro); color:white" onclick="addCli()">GUARDAR</button>
+        <button class="btn" style="background:#eee" onclick="openMod('mod-cli', false)">CANCELAR</button>
+    </div>
+
+    <div id="mod-mat" class="panel">
+        <h2>Nuevo Gasto</h2>
+        <input type="text" id="n-mat" placeholder="Descripción">
+        <input type="number" id="c-mat" placeholder="Monto ($)">
+        <button class="btn" style="background:var(--oscuro); color:white" onclick="addMat()">REGISTRAR GASTO</button>
+        <button class="btn" style="background:#eee" onclick="openMod('mod-mat', false)">CANCELAR</button>
+    </div>
+
+    <div id="panel-pagos" class="panel">
+        <img src="https://i.imgur.com/8YvLh6F.png" alt="Logo" class="app-logo">
+        <h2 id="pago-nom">Nombre</h2>
+        <p id="pago-serv" style="color:var(--primario); font-weight:bold; margin-bottom:20px;"></p>
+        
+        <button id="btn-cobro-real" class="btn hidden" style="background:green; color:white" onclick="nuevoPago()">+ REGISTRAR COBRO</button>
+        
+        <div id="historial-pagos"></div>
+        <button class="btn" style="margin-top:20px" onclick="openMod('panel-pagos', false)">CERRAR</button>
+    </div>
+
+    <script>
+        // DB inicial
+        let db_c = JSON.parse(localStorage.getItem('theone_db_c')) || [];
+        let db_m = JSON.parse(localStorage.getItem('theone_db_m')) || [];
+        let cur_rol = '';
+        let cur_type = '';
+        let cur_cli_id = null;
+
+        function showAuth(type) {
+            cur_type = type;
+            document.getElementById('auth-title').innerText = "ACCESO " + type.toUpperCase();
+            document.getElementById('login-menu').classList.add('hidden');
+            document.getElementById('login-auth').classList.remove('hidden');
+        }
+
+        function checkAuth() {
+            const u = document.getElementById('user').value;
+            const p = document.getElementById('pass').value;
+            if(cur_type === 'director' && u === 'admin' && p === '1234') login('director');
+            else if(cur_type === 'gerente' && u === 'gerente01' && p === '2026') login('gerente');
+            else alert("Error de credenciales");
+        }
+
+        function login(rol) {
+            cur_rol = rol;
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('main-app').style.display = 'flex';
+            document.getElementById('role-tag').innerText = rol.toUpperCase();
+
+            // PERMISOS DE INTERFAZ
+            if(rol === 'gerente' || rol === 'director') {
+                document.getElementById('btn-nuevo-cliente').classList.remove('hidden');
+                document.getElementById('btn-cobro-real').classList.remove('hidden');
+            }
+            if(rol === 'director') {
+                document.getElementById('nav-mat').classList.remove('hidden');
+                document.getElementById('nav-bal').classList.remove('hidden');
+                document.getElementById('th-borrar').classList.remove('hidden');
+            }
+            render();
+        }
+
+        function render() {
+            const busqueda = document.getElementById('input-busqueda').value.toLowerCase();
+            const lista = document.getElementById('lista-cli');
+            lista.innerHTML = '';
+            
+            let total_ingresos = 0;
+
+            db_c.filter(c => c.nom.toLowerCase().includes(busqueda)).forEach(c => {
+                let suma = c.pagos.reduce((a, b) => a + b.m, 0);
+                total_ingresos += suma;
+                
+                let tr = document.createElement('tr');
+                tr.onclick = () => verDetalles(c.id);
+                
+                let tdBorrar = cur_rol === 'director' ? `<td onclick="event.stopPropagation(); borrarCli(${c.id})"><i class="ti ti-trash" style="color:red"></i></td>` : '';
+                
+                tr.innerHTML = `
+                    <td><b>${c.nom}</b><br><small style="color:gray">${c.serv}</small></td>
+                    <td style="text-align:right; font-weight:bold; color:green">$${suma}</td>
+                    ${tdBorrar}
+                `;
+                lista.appendChild(tr);
+            });
+
+            // Gastos (Director)
+            const listaM = document.getElementById('lista-mat');
+            listaM.innerHTML = '';
+            let total_gastos = 0;
+            db_m.forEach((m, idx) => {
+                total_gastos += m.c;
+                listaM.innerHTML += `<tr><td>${m.f}</td><td>${m.n}</td><td style="color:red">-$${m.c}</td><td onclick="borrarMat(${idx})"><i class="ti ti-trash" style="color:red"></i></td></tr>`;
+            });
+
+            document.getElementById('tot-in').innerText = '$' + total_ingresos;
+            document.getElementById('tot-out').innerText = '$' + total_gastos;
+            renderGraf(total_ingresos);
+        }
+
+        function verDetalles(id) {
+            const cliente = db_c.find(x => x.id === id);
+            cur_cli_id = id;
+            document.getElementById('pago-nom').innerText = cliente.nom;
+            document.getElementById('pago-serv').innerText = cliente.serv;
+            
+            const hist = document.getElementById('historial-pagos');
+            hist.innerHTML = cliente.pagos.map(p => `
+                <div style="display:flex; justify-content:space-between; padding:12px; background:#f9f9f9; border-radius:10px; margin-bottom:8px; border-left:4px solid green">
+                    <span><b>$${p.m}</b><br><small>${p.f}</small></span>
+                    <i class="ti ti-circle-check" style="color:green"></i>
+                </div>
+            `).join('');
+            
+            openMod('panel-pagos', true);
+        }
+
+        function nuevoPago() {
+            // Protección extra: solo si no es empleado
+            if(cur_rol === 'empleado') return;
+            
+            const m = parseFloat(prompt("Ingrese el monto del cobro:"));
+            if(m > 0) {
+                const cliente = db_c.find(x => x.id === cur_cli_id);
+                cliente.pagos.push({ m, f: new Date().toLocaleDateString() });
+                save();
+                verDetalles(cur_cli_id);
+                render();
+            }
+        }
+
+        function addCli() {
+            const nom = document.getElementById('n-cli').value;
+            const serv = document.getElementById('s-cli').value;
+            const pago = parseFloat(document.getElementById('p-cli').value) || 0;
+            if(!nom) return alert("Falta nombre");
+            
+            db_c.push({ id: Date.now(), nom, serv, pagos: [{m: pago, f: new Date().toLocaleDateString()}] });
+            save();
+            openMod('mod-cli', false);
+            render();
+        }
+
+        function addMat() {
+            const n = document.getElementById('n-mat').value;
+            const c = parseFloat(document.getElementById('c-mat').value) || 0;
+            if(!n || !c) return;
+            db_m.push({ n, c, f: new Date().toLocaleDateString() });
+            save();
+            openMod('mod-mat', false);
+            render();
+        }
+
+        function borrarCli(id) {
+            if(confirm("¿Eliminar cliente?")) {
+                db_c = db_c.filter(c => c.id !== id);
+                save(); render();
+            }
+        }
+
+        function borrarMat(idx) {
+            db_m.splice(idx, 1);
+            save(); render();
+        }
+
+        function save() {
+            localStorage.setItem('theone_db_c', JSON.stringify(db_c));
+            localStorage.setItem('theone_db_m', JSON.stringify(db_m));
+        }
+
+        function tab(sec, el) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('sec-' + sec).classList.add('active');
+            el.classList.add('active');
+        }
+
+        function openMod(id, open) {
+            document.getElementById(id).classList.toggle('open', open);
+        }
+
+        function renderGraf(total) {
+            const g = document.getElementById('grafico');
+            g.innerHTML = '';
+            ["Graduación", "Bodas", "XV Años", "Retrato"].forEach(s => {
+                let suma = 0;
+                db_c.filter(x => x.serv === s).forEach(x => x.pagos.forEach(p => suma += p.m));
+                let por = total > 0 ? (suma / total) * 100 : 0;
+                g.innerHTML += `
+                    <div style="margin-bottom:10px">
+                        <div style="display:flex; justify-content:space-between; font-size:11px"><span>${s}</span><b>$${suma}</b></div>
+                        <div style="height:6px; background:#eee; border-radius:10px; margin-top:4px"><div style="width:${por}%; height:100%; background:var(--primario); border-radius:10px;"></div></div>
+                    </div>`;
+            });
+        }
+    </script>
 </body>
 </html>
